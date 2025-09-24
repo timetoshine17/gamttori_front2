@@ -3,15 +3,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Image,
-    ImageBackground,
-    LayoutChangeEvent,
-    Modal,
-    Platform,
-    Pressable,
-    StyleSheet,
-    View,
+  ActivityIndicator,
+  Image,
+  ImageBackground,
+  LayoutChangeEvent,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  View,
 } from 'react-native';
 // @ts-ignore
 import { ResizeMode, Video } from 'expo-av';
@@ -220,10 +220,9 @@ export default function Story() {
           <Image source={require('../../assets/images/gamttori_down.png')} style={styles.titleImg} />
         </View>
 
-        {/* 스토리 비디오 안내 */}
-        <CustomText style={{ marginTop: 8 }}>
-          {`사용 가능한 스토리: ${storyVideos.length}개`}
-        </CustomText>
+        {/* 서브타이틀 */}
+        <CustomText style={styles.subtitle}>감또리, 이렇게 성장했어요!</CustomText>
+
 
         {/* 로딩 중 */}
         {loading && (
@@ -369,6 +368,13 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 35, paddingTop: 40 },
   titleImg: { width: 100, height: 100, marginTop: 30, marginLeft: 10 },
+  subtitle: { 
+    fontSize: 18, 
+    color: '#666', 
+    textAlign: 'center', 
+    marginTop: 8,
+    marginBottom: 20,
+  },
 
   stoneWrap: {
     position: 'absolute',
@@ -397,49 +403,59 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    width: '95%',
-    maxHeight: '90%',
-    maxWidth: 800,
+    backgroundColor: '#000',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   videoHeader: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    right: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    zIndex: 10,
   },
   videoTitle: {
     fontSize: 20,
     flex: 1,
     marginRight: 12,
     fontWeight: '600',
+    color: '#fff',
   },
   closeButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#f3f4f6',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   closeButtonText: {
-    fontSize: 18,
-    color: '#666',
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
   },
   videoPlayer: {
     width: '100%',
-    height: 300,
+    height: '100%',
     backgroundColor: '#000',
-    borderRadius: 12,
   },
   videoDescription: {
-    marginTop: 16,
+    position: 'absolute',
+    bottom: 50,
+    left: 20,
+    right: 20,
     fontSize: 16,
-    color: '#666',
+    color: '#fff',
     textAlign: 'center',
     lineHeight: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 12,
+    borderRadius: 8,
   },
   errorContainer: {
     backgroundColor: '#fee2e2',
