@@ -157,7 +157,7 @@ export default function LoginPage() {
             안녕하세요,{'\n'}만나서 반가워요!
           </CustomText>
 
-          <View style={{ height: 20, marginTop:100 }} />
+          <View style={{ height: 20, marginTop: 60 }} />
           <AuthInput
             placeholder="이메일을 입력해주세요."
             autoCapitalize="none"
@@ -220,16 +220,14 @@ const styles = StyleSheet.create({
     fontFamily: 'MaruBuri-Regular',
   },
   topSection: {
-    flex: 1,
     justifyContent: 'flex-start',
     paddingTop: 40,
   },
   centerSection: {
-    flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    paddingVertical: 40,
   },
   bottomSection: {
-    flex: 1,
     justifyContent: 'flex-end',
     paddingBottom: 20,
   },
