@@ -7,7 +7,7 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/((?!api|_next/static|_next/image|favicon.ico|_expo).*)',
+        source: '/((?!api|_next/static|_next/image|favicon.ico|_expo|assets).*)',
         destination: '/',
       },
     ];
