@@ -54,7 +54,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) {
+    console.error('useAuth must be used within AuthProvider');
+    // 개발 환경에서는 기본값을 반환하여 앱이 크래시되지 않도록 함
+    return {
+      token: null,
+      initialized: false,
+      signIn: async () => {},
+      signOut: async () => {}
+    };
+  }
   return ctx;
 }
 

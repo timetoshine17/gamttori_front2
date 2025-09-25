@@ -9,7 +9,7 @@ import { AuthProvider, useAuth } from './_providers/AuthProvider';
 // 스플래시 화면을 자동으로 숨기지 않게 설정
 SplashScreen.preventAutoHideAsync();
 
-function Gate() {
+function AppContent() {
   const { token, initialized } = useAuth();
   const pathname = usePathname();
 
@@ -46,7 +46,7 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <Gate />
+      <AppContent />
     </AuthProvider>
   );
 }
