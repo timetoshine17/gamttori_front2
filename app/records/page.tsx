@@ -7,7 +7,7 @@ import { useAuth } from '../_providers/AuthProvider';
 
 const DAYS = Array.from({ length: 30 }, (_, i) => i + 1);
 
-export default function Records() {
+export default function RecordsPage() {
   const { token, initialized } = useAuth();
   const data = useMemo(() => DAYS, []);
 

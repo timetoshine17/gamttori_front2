@@ -1,4 +1,4 @@
-// app/story/index.tsx
+// app/story/page.tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -144,7 +144,7 @@ function isStoryUnlocked(storyVideos: StoryVideo[], stoneIdxZeroBased: number) {
   return storyVideos.some(video => video.day === targetDay);
 }
 
-export default function Story() {
+export default function StoryPage() {
   const { token, initialized } = useAuth();
   const [container, setContainer] = useState({ w: 0, h: 0 });
   const [storyVideos, setStoryVideos] = useState<StoryVideo[]>([]);

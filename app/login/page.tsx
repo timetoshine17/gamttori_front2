@@ -9,7 +9,7 @@ import Button from '../_components/Button';
 import CustomText from '../_components/CustomText';
 import { useAuth } from '../_providers/AuthProvider';
 
-export default function Login() {
+export default function LoginPage() {
   const { signIn, token, initialized } = useAuth();
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');

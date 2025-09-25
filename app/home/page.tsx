@@ -1,4 +1,4 @@
-// app/home/index.tsx
+// app/home/page.tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -10,7 +10,7 @@ import CustomText from '../_components/CustomText';
 import { useAuth } from '../_providers/AuthProvider';
 import MoodModal from './mood';
 
-export default function Home() {
+export default function HomePage() {
   const { token, initialized } = useAuth();
   const { lastShownDate, setShown, currentDay } = useProgress();
   const [count, setCount] = useState(0);
