@@ -30,7 +30,12 @@ export default function HomePage() {
   // 로그인 페이지로 리다이렉트 처리
   useEffect(() => {
     if (initialized && !token) {
-      router.replace('/login');
+      console.log('토큰이 없어서 로그인 페이지로 리다이렉트');
+      // 약간의 지연을 두어 무한 리다이렉트 방지
+      const timer = setTimeout(() => {
+        router.replace('/login');
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [initialized, token]);
 

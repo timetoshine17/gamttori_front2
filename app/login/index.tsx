@@ -63,17 +63,16 @@ export default function LoginPage() {
       console.log('API 응답:', response);
       
       if (response.success) {
-        console.log('로그인 성공, 토큰 저장 중...');
-        // 토큰과 사용자 정보를 AsyncStorage에 저장
-        await AsyncStorage.setItem('auth_token', response.data.token);
+        console.log('로그인 성공, 사용자 정보 저장 중...');
+        // 사용자 정보만 저장 (토큰은 AuthProvider에서 처리)
         await AsyncStorage.setItem('user_info', JSON.stringify(response.data.user));
         
-        // AuthProvider에 로그인 상태 전달
+        // AuthProvider에 로그인 상태 전달 (토큰 저장 포함)
         await signIn(response.data.token);
         
         console.log('홈으로 이동...');
-        // replace 대신 push를 사용하여 네비게이션 스택을 유지
-        router.push('/home');
+        // replace를 사용하여 로그인 페이지를 스택에서 제거
+        router.replace('/home');
       } else {
         throw new Error(response.message || '로그인에 실패했습니다.');
       }

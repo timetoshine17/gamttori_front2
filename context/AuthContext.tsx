@@ -39,9 +39,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (t: string) => {
     console.log('AuthProvider: signIn 호출됨, 토큰:', t ? '존재함' : '없음');
     try {
-      setToken(t);
+      // 먼저 AsyncStorage에 저장
       await AsyncStorage.setItem('auth_token', t);
-      console.log('AuthProvider: signIn 완료');
+      // 그 다음 상태 업데이트
+      setToken(t);
+      console.log('AuthProvider: signIn 완료, 토큰 설정됨');
     } catch (error) {
       console.error('AuthProvider: signIn 오류:', error);
       throw error;
