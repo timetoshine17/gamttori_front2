@@ -1,17 +1,21 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../../context/AuthContext';
 import { userApi } from '../../src/_lib/api';
 import AuthInput from '../_components/AuthInput';
 import Button from '../_components/Button';
 import CustomText from '../_components/CustomText';
 
 export default function Signup() {
+  const { signIn } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
+  const [isSigningUp, setIsSigningUp] = useState(false);
 
   const validate = () => {
     if (!name || !email || !pw || !pw2) throw new Error('모든 항목을 입력해주세요.');
@@ -21,32 +25,68 @@ export default function Signup() {
   };
 
   const onSignup = async () => {
+    if (isSigningUp) return; // 이미 회원가입 중이면 중복 실행 방지
+    
     try {
+      setIsSigningUp(true);
       console.log('=== 회원가입 버튼 클릭됨 ===');
       console.log('입력된 이름:', name);
       console.log('입력된 이메일:', email);
       console.log('입력된 비밀번호:', pw ? '***' : '없음');
       console.log('입력된 비밀번호 확인:', pw2 ? '***' : '없음');
       
-      // 먼저 간단한 알림으로 버튼이 작동하는지 확인
-      Alert.alert('버튼 테스트', '회원가입 버튼이 클릭되었습니다!');
-      
       validate();
       
-      console.log('API 호출 시작...');
+      console.log('회원가입 API 호출 시작...');
       // 백엔드 API를 통한 회원가입
-      const response = await userApi.register(email, pw, name);
-      console.log('API 응답:', response);
+      const registerResponse = await userApi.register(email, pw, name);
+      console.log('회원가입 API 응답:', registerResponse);
       
-      if (response.success) {
-        console.log('회원가입 성공, 완료 페이지로 이동...');
-        router.replace({ pathname: '/login/signup-complete', params: { name } });
+      if (registerResponse.success) {
+        console.log('회원가입 성공, 자동 로그인 시도...');
+        
+        // 회원가입 성공 후 자동으로 로그인 시도
+        try {
+          const loginResponse = await userApi.login(email, pw);
+          console.log('자동 로그인 API 응답:', loginResponse);
+          
+          if (loginResponse.success && loginResponse.data) {
+            console.log('자동 로그인 성공, 사용자 정보 저장 중...');
+            
+            // 사용자 정보 저장
+            await AsyncStorage.setItem('user_info', JSON.stringify(loginResponse.data.user));
+            
+            // 가입일 저장
+            const today = new Date();
+            await AsyncStorage.setItem('user_join_date', today.toISOString());
+            console.log('가입일 저장 완료:', today.toISOString());
+            
+            // AuthProvider에 로그인 상태 전달
+            await signIn(loginResponse.data.token);
+            console.log('AuthProvider signIn 완료');
+            
+            console.log('홈으로 이동...');
+            // 회원가입 완료 후 바로 홈으로 이동
+            router.replace('/home');
+          } else {
+            // 자동 로그인 실패 시 회원가입 완료 페이지로 이동
+            console.log('자동 로그인 실패, 회원가입 완료 페이지로 이동...');
+            router.replace({ pathname: '/login/signup-complete', params: { name } });
+          }
+        } catch (loginError) {
+          console.error('자동 로그인 오류:', loginError);
+          // 자동 로그인 실패 시 회원가입 완료 페이지로 이동
+          console.log('자동 로그인 실패, 회원가입 완료 페이지로 이동...');
+          router.replace({ pathname: '/login/signup-complete', params: { name } });
+        }
       } else {
-        throw new Error('회원가입에 실패했습니다.');
+        throw new Error(registerResponse.error || registerResponse.message || '회원가입에 실패했습니다.');
       }
     } catch (e: any) {
       console.error('회원가입 오류:', e);
       Alert.alert('가입 실패', e?.message ?? '다시 시도해주세요.');
+    } finally {
+      setIsSigningUp(false);
     }
   };
 
@@ -95,7 +135,12 @@ export default function Signup() {
           />
         </View>
 
-        <Button title="동의하고 가입하기" size="xl" onPress={onSignup} />
+        <Button 
+          title={isSigningUp ? "가입 중..." : "동의하고 가입하기"} 
+          size="xl" 
+          onPress={onSignup}
+          disabled={isSigningUp}
+        />
       </View>
     </SafeAreaView>
   );

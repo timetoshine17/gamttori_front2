@@ -41,6 +41,13 @@ export default function SignupComplete() {
         </View>
 
         <Button title="로그인하러 가기" size="xl" onPress={() => router.replace('/login')} />
+        <View style={{ height: 12 }} />
+        <Button 
+          title="홈으로 가기" 
+          size="xl" 
+          onPress={() => router.replace('/home')}
+          style={{ backgroundColor: '#f3f4f6' }}
+        />
       </View>
     </SafeAreaView>
   );
