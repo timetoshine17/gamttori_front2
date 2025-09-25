@@ -39,6 +39,9 @@ export default {
     extra: {
       supabaseUrl: process.env.SUPABASE_URL || "https://afvsmtyxdlmxuwdipepq.supabase.co",
       supabaseAnonKey: process.env.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmdnNtdHl4ZGxteHV3ZGlwZXBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwNjU5OTMsImV4cCI6MjA3MzY0MTk5M30.iY1WZjqOd7Y5IEYHntNU4XbsGMNy8B5znA_g-opEzPY",
+      eas: {
+        projectId: "8cff4dbe-3f6e-4a77-a034-ef0dc63ec201"
+      }
     }
   }
 };
