@@ -10,6 +10,7 @@ import CustomText from '../_components/CustomText';
 import PoemTTSButton from '../_components/PoemTTSButton';
 import TextArea from '../_components/TextArea';
 import TTSButton from '../_components/TTSButton';
+import AdvancedSTTButton from '../_components/AdvancedSTTButton';
 
 type Step = 0 | 1;
 
@@ -263,7 +264,23 @@ export default function Poem() {
                 </View>
               </View>
             </View>
-            <TextArea placeholder="답변을 말하거나 입력해주세요" value={answer} onChangeText={setAnswer} style={{ marginTop: 4, height:400 }} />
+            <View style={styles.inputContainer}>
+              <TextArea 
+                placeholder="답변을 말하거나 입력해주세요" 
+                value={answer} 
+                onChangeText={setAnswer} 
+                style={styles.textArea} 
+              />
+              <View style={styles.sttContainer}>
+                <AdvancedSTTButton 
+                  onResult={(text) => {
+                    setAnswer(prev => prev + (prev ? ' ' : '') + text);
+                  }}
+                  disabled={false}
+                  style={styles.sttButton}
+                />
+              </View>
+            </View>
             <View style={styles.rowGap}>
               <Button 
                 title="저장하기" 
@@ -391,5 +408,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  
+  // STT 관련 스타일
+  inputContainer: {
+    marginTop: 4,
+  },
+  textArea: {
+    height: 400,
+  },
+  sttContainer: {
+    marginTop: 12,
+    alignItems: 'flex-end',
+  },
+  sttButton: {
+    backgroundColor: '#e3f2fd',
+    borderColor: '#2196f3',
   },
 });

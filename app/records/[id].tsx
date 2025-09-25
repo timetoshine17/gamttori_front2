@@ -3,6 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Image, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { API_CONFIG, poemApi, type Poem } from '../../src/_lib/api';
+import AdvancedSTTButton from '../_components/AdvancedSTTButton';
 import Button from '../_components/Button';
 import Card from '../_components/Card';
 import CustomText from '../_components/CustomText';
@@ -289,12 +290,23 @@ export default function RecordDetail() {
                 {questions.length > 0 ? questions[0].question : '오늘은 어떤 하루를 보내셨나요?'}
               </CustomText>
               
-              <TextArea 
-                placeholder="답변을 입력해주세요" 
-                value={editAnswer} 
-                onChangeText={setEditAnswer} 
-                style={styles.editTextArea} 
-              />
+              <View style={styles.editInputContainer}>
+                <TextArea 
+                  placeholder="답변을 말하거나 입력해주세요" 
+                  value={editAnswer} 
+                  onChangeText={setEditAnswer} 
+                  style={styles.editTextArea} 
+                />
+                <View style={styles.editSttContainer}>
+                  <AdvancedSTTButton 
+                    onResult={(text) => {
+                      setEditAnswer(prev => prev + (prev ? ' ' : '') + text);
+                    }}
+                    disabled={false}
+                    style={styles.editSttButton}
+                  />
+                </View>
+              </View>
               
               <View style={styles.editButtons}>
                 <Button 
@@ -553,10 +565,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     textAlign: 'center',
   },
-  editTextArea: {
-    marginBottom: 20,
-    height: 200,
-  },
   editButtons: {
     flexDirection: 'row',
     gap: 12,
@@ -594,5 +602,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  
+  // STT 관련 스타일
+  editInputContainer: {
+    marginBottom: 20,
+  },
+  editTextArea: {
+    height: 200,
+  },
+  editSttContainer: {
+    marginTop: 12,
+    alignItems: 'flex-end',
+  },
+  editSttButton: {
+    backgroundColor: '#e3f2fd',
+    borderColor: '#2196f3',
   },
 });

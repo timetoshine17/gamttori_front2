@@ -1,13 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Dimensions, Pressable, StyleSheet, View } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { API_CONFIG, moodApi } from '../../src/_lib/api';
 import Card from '../_components/Card';
 import CustomText from '../_components/CustomText';
-
-const screenWidth = Dimensions.get('window').width - 32;
 
 interface MoodData {
   date: string;
@@ -140,11 +137,17 @@ export default function MoodGraph() {
     });
   };
 
-  const labels = moodData.map((_, index) => {
-    const date = new Date(moodData[index].date);
-    return `${date.getMonth() + 1}/${date.getDate()}`;
-  });
-  const data = moodData.map(d => d.weight);
+  // 평균 점수에 따른 귀여운 격려 문구 생성
+  const getEncouragementMessage = (average: number): string => {
+    if (average >= 4.0) {
+      return "와! 정말 멋진 하루였어요! 🌟✨\n감또리가 응원할게요! 💕";
+    } else if (average >= 3.0) {
+      return "오늘도 수고했어요! 🥰\n감또리와 함께 더 좋은 날 만들어요! 🌈";
+    } else {
+      return "힘든 하루였지만 잘 버텨냈어요! 🤗\n감또리가 따뜻하게 안아줄게요! 💝";
+    }
+  };
+
 
   if (loading) {
     return (
@@ -177,96 +180,26 @@ export default function MoodGraph() {
         >
           <CustomText style={styles.backButtonText}>뒤로가기</CustomText>
         </Pressable>
-        <CustomText weight="Bold" style={styles.title}>감정 분석</CustomText>
+        <CustomText weight="Bold" style={styles.title}>감또리의 응원 💕</CustomText>
       </View>
 
-      {/* 감정 분석 요약 */}
-      <Card style={styles.analysisCard}>
-        <View style={styles.analysisHeader}>
-          <CustomText weight="Bold" style={styles.analysisTitle}>감정 분석 결과</CustomText>
+      {/* 감정 분석 결과 */}
+      <Card style={styles.mainCard}>
+        <View style={styles.cardHeader}>
+          <CustomText weight="Bold" style={styles.cardTitle}>최근 기분은 어떠셨나요?</CustomText>
         </View>
-        <View style={styles.analysisGrid}>
-          <View style={styles.analysisItem}>
-            <CustomText style={styles.analysisLabel}>평균 기분</CustomText>
-            <CustomText weight="Bold" style={styles.analysisValue}>
-              {getEmojiByWeight(Math.round(analysis.average))} {analysis.average.toFixed(1)}점
-            </CustomText>
-          </View>
-          <View style={styles.analysisItem}>
-            <CustomText style={styles.analysisLabel}>기분 변화</CustomText>
-            <CustomText weight="Bold" style={styles.analysisValue}>
-              {analysis.trend === 'up' ? '상승' : 
-               analysis.trend === 'down' ? '하락' : '안정'}
-            </CustomText>
-          </View>
-          <View style={styles.analysisItem}>
-            <CustomText style={styles.analysisLabel}>최고 기분</CustomText>
-            <CustomText weight="Bold" style={styles.analysisValue}>
-              {getEmojiByWeight(analysis.highest)} {analysis.highest}점
-            </CustomText>
-          </View>
-          <View style={styles.analysisItem}>
-            <CustomText style={styles.analysisLabel}>최저 기분</CustomText>
-            <CustomText weight="Bold" style={styles.analysisValue}>
-              {getEmojiByWeight(analysis.lowest)} {analysis.lowest}점
-            </CustomText>
+        
+        <View style={styles.cardContent}>
+          <CustomText weight="Bold" style={styles.encouragementMessage}>
+            {getEncouragementMessage(analysis.average)}
+          </CustomText>
+          
+          <View style={styles.emojiRow}>
+            {moodData.map((mood, index) => (
+              <CustomText key={index} style={styles.emojiText}>{mood.emoji}</CustomText>
+            ))}
           </View>
         </View>
-      </Card>
-
-      {/* 감정 그래프 */}
-      <Card style={styles.chartCard}>
-        <View style={styles.chartHeader}>
-          <CustomText weight="Bold" style={styles.chartTitle}>7일간 감정 변화</CustomText>
-        </View>
-        <LineChart
-          data={{ labels, datasets: [{ data }] }}
-          width={screenWidth - 32}
-          height={260}
-          fromZero
-          segments={4}
-          yAxisInterval={1}
-          chartConfig={{
-            backgroundGradientFrom: '#fef3c7',
-            backgroundGradientTo: '#fef3c7',
-            color: (o = 1) => `rgba(245, 158, 11, ${o})`,
-            labelColor: (o = 1) => `rgba(146, 64, 14, ${o})`,
-            propsForDots: { r: '8', strokeWidth: '3', stroke: '#f59e0b' },
-            strokeWidth: 4,
-          }}
-          bezier
-          withVerticalLines={false}
-          withHorizontalLines
-          style={{ borderRadius: 16, marginTop: 12 }}
-        />
-        <View style={styles.legend}>
-          <CustomText style={styles.legendText}>😢 1점 (매우 나쁨) ~ 😄 5점 (매우 좋음)</CustomText>
-        </View>
-      </Card>
-
-      {/* 일별 감정 상세 */}
-      <Card style={styles.detailCard}>
-        <View style={styles.detailHeader}>
-          <CustomText weight="Bold" style={styles.detailTitle}>일별 감정 상세</CustomText>
-        </View>
-        {moodData.map((mood, index) => (
-          <View key={index} style={styles.detailItem}>
-            <View style={styles.detailDateContainer}>
-              <CustomText style={styles.detailDate}>
-                {new Date(mood.date).toLocaleDateString('ko-KR', { 
-                  month: 'short', 
-                  day: 'numeric',
-                  weekday: 'short'
-                })}
-              </CustomText>
-              <CustomText style={styles.detailDay}>Day {index + 1}</CustomText>
-            </View>
-            <View style={styles.detailMood}>
-              <CustomText style={styles.detailEmoji}>{mood.emoji}</CustomText>
-              <CustomText style={styles.detailWeight}>{mood.weight}점</CustomText>
-            </View>
-          </View>
-        ))}
       </Card>
     </View>
   );
@@ -322,136 +255,50 @@ const styles = StyleSheet.create({
     color: '#495057', // 진한 회색
   },
   
-  // 분석 카드 스타일
-  analysisCard: {
-    backgroundColor: '#e3f2fd', // 연한 파란색
-    borderLeftWidth: 4,
-    borderLeftColor: '#2196f3', // 파란색 테두리
-    borderRadius: 12,
-    padding: 16,
-  },
-  analysisHeader: {
-    marginBottom: 16,
-  },
-  analysisTitle: {
-    fontSize: 20,
-    color: '#1976d2', // 파란색
-    fontWeight: '600',
-  },
-  analysisGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  analysisItem: {
-    flex: 1,
-    minWidth: '45%',
+  // 메인 카드 스타일 (기다란 상자)
+  mainCard: {
     backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#bbdefb', // 연한 파란색 테두리
-    shadowColor: '#2196f3',
-    shadowOffset: { width: 0, height: 1 },
+    borderRadius: 16,
+    padding: 32,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowRadius: 8,
+    elevation: 4,
+    minHeight: 200,
   },
-  analysisLabel: {
-    fontSize: 14,
-    color: '#1976d2', // 파란색
-    marginBottom: 4,
-    fontWeight: '600',
-  },
-  analysisValue: {
-    fontSize: 16,
-    color: '#0d47a1', // 진한 파란색
-    fontWeight: 'bold',
-  },
-  
-  // 차트 카드 스타일
-  chartCard: {
-    backgroundColor: '#fff3cd', // 연한 노란색
-    borderRadius: 12,
-    padding: 16,
-    borderLeftWidth: 4,
-    borderLeftColor: '#ffc107', // 노란색 테두리
-  },
-  chartHeader: {
-    marginBottom: 12,
-  },
-  chartTitle: {
-    fontSize: 18,
-    color: '#856404', // 진한 노란색
-    fontWeight: '600',
-  },
-  legend: {
+  cardHeader: {
+    marginBottom: 24,
     alignItems: 'center',
-    marginTop: 8,
   },
-  legendText: {
-    fontSize: 14,
-    color: '#856404', // 진한 노란색
-  },
-  
-  // 상세 카드 스타일
-  detailCard: {
-    backgroundColor: '#d4edda', // 연한 초록색
-    borderLeftWidth: 4,
-    borderLeftColor: '#28a745', // 초록색 테두리
-    borderRadius: 12,
-    padding: 16,
-  },
-  detailHeader: {
-    marginBottom: 16,
-  },
-  detailTitle: {
-    fontSize: 18,
-    color: '#155724', // 진한 초록색
-    fontWeight: '600',
-  },
-  detailItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#c3e6cb', // 연한 초록색 테두리
-    shadowColor: '#28a745',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  detailDateContainer: {
-    flex: 1,
-  },
-  detailDate: {
-    fontSize: 16,
-    color: '#155724', // 진한 초록색
-    fontWeight: '600',
-  },
-  detailDay: {
-    fontSize: 12,
-    color: '#28a745', // 초록색
-    marginTop: 2,
-  },
-  detailMood: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  detailEmoji: {
+  cardTitle: {
     fontSize: 24,
+    color: '#333333',
+    fontWeight: '700',
+    textAlign: 'center',
   },
-  detailWeight: {
-    fontSize: 16,
-    color: '#155724', // 진한 초록색
-    fontWeight: 'bold',
+  cardContent: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  encouragementMessage: {
+    fontSize: 18,
+    color: '#666666',
+    textAlign: 'center',
+    lineHeight: 28,
+    fontWeight: '500',
+    marginBottom: 32,
+  },
+  emojiRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20,
+    flexWrap: 'wrap',
+  },
+  emojiText: {
+    fontSize: 36,
   },
 });

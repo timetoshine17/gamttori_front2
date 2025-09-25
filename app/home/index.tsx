@@ -3,15 +3,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, ImageBackground, Pressable, StyleSheet, View } from 'react-native';
+import StoryModal from '../../components/StoryModal';
+import { GAMTORI_DAYS } from '../../data/gamttoriDays';
+import { useProgress } from '../../store/progress';
 import CustomText from '../_components/CustomText';
 import { useAuth } from '../_providers/AuthProvider';
 import MoodModal from './mood';
 
 export default function Home() {
   const { token, initialized } = useAuth();
+  const { lastShownDate, setShown, currentDay } = useProgress();
   const [count, setCount] = useState(0);
   const [userInfo, setUserInfo] = useState<any>(null);
   const [showMoodModal, setShowMoodModal] = useState(false);
+  const [showStoryModal, setShowStoryModal] = useState(false);
   const [greeting, setGreeting] = useState('만나서 반가워요!');
 
   // 랜덤 인사말 배열
@@ -103,6 +108,18 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // 스토리 모달 표시 로직
+  useEffect(() => {
+    const today = new Date().toISOString().split("T")[0];
+    if (lastShownDate !== today) {
+      setShowStoryModal(true);
+      setShown(today);
+    }
+  }, [lastShownDate, setShown]);
+
+  // 현재 일차에 해당하는 스토리 데이터 찾기
+  const todayData = GAMTORI_DAYS.find((d) => d.day === currentDay);
+
   return (
     <ImageBackground 
       source={require('../../assets/images/homebg.png')} 
@@ -173,6 +190,15 @@ export default function Home() {
         visible={showMoodModal}
         onClose={() => setShowMoodModal(false)}
       />
+
+      {/* 스토리 모달 */}
+      {todayData && (
+        <StoryModal
+          visible={showStoryModal}
+          onClose={() => setShowStoryModal(false)}
+          day={todayData}
+        />
+      )}
     </ImageBackground>
   );
 }
