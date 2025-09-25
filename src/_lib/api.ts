@@ -46,8 +46,15 @@ export async function apiCall<T>(
     console.log('API 응답 상태:', response.status, response.statusText);
     
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API 오류 응답:', errorText);
+      let errorText;
+      try {
+        const errorData = await response.json();
+        errorText = errorData.error || errorData.message || response.statusText;
+        console.error('API 오류 응답:', errorData);
+      } catch {
+        errorText = await response.text();
+        console.error('API 오류 응답 (텍스트):', errorText);
+      }
       throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
     }
     
@@ -128,8 +135,9 @@ export interface User {
 
 export interface LoginResponse {
   success: boolean;
-  message: string;
-  data: {
+  message?: string;
+  error?: string;
+  data?: {
     token: string;
     user: User;
   };
