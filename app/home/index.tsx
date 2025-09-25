@@ -19,6 +19,13 @@ export default function HomePage() {
   const [showStoryModal, setShowStoryModal] = useState(false);
   const [greeting, setGreeting] = useState('만나서 반가워요!');
 
+  // 디버깅을 위한 로그
+  useEffect(() => {
+    console.log('홈 페이지 렌더링됨');
+    console.log('initialized:', initialized);
+    console.log('token:', token ? '존재함' : '없음');
+  }, [initialized, token]);
+
   // 랜덤 인사말 배열
   const greetings = [
     '만나서 반가워요!',
@@ -38,12 +45,26 @@ export default function HomePage() {
   // 로그인 확인
   useEffect(() => {
     if (initialized && !token) {
+      console.log('홈 페이지: 로그인되지 않은 상태, 로그인 페이지로 이동');
       router.replace('/login');
     }
   }, [initialized, token]);
 
-  if (!initialized || !token) {
-    return null;
+  // 초기화 중이거나 토큰이 없으면 로딩 화면 표시
+  if (!initialized) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+        <CustomText>로딩 중...</CustomText>
+      </View>
+    );
+  }
+
+  if (!token) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+        <CustomText>로그인이 필요합니다...</CustomText>
+      </View>
+    );
   }
 
   // n일차 계산 (가입일 기준)
