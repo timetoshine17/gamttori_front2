@@ -164,6 +164,9 @@ export default function LoginPage() {
             keyboardType="email-address"
             value={id}
             onChangeText={setId}
+            autoFocus={true}
+            returnKeyType="next"
+            blurOnSubmit={false}
           />
           <View style={{ height: 12 }} />
           <AuthInput
@@ -172,6 +175,8 @@ export default function LoginPage() {
             autoCapitalize="none"
             value={pw}
             onChangeText={setPw}
+            returnKeyType="done"
+            onSubmitEditing={onLogin}
           />
         </View>
 

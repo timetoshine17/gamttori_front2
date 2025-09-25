@@ -18,6 +18,10 @@ export default function AuthInput({ secure, style, ...rest }: Props) {
         style={styles.input}
         secureTextEntry={isSecure}
         placeholderTextColor="#9ca3af"
+        autoComplete="off"
+        autoCorrect={false}
+        spellCheck={false}
+        importantForAutofill="no"
       />
       {secure ? (
         <Pressable style={styles.eye} hitSlop={8} onPress={() => setShow(s => !s)}>
@@ -35,12 +39,18 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
     borderRadius: 12,
     backgroundColor: '#f9fafb',
+    minHeight: 52,
   },
   input: {
     height: 52,
     paddingHorizontal: 16,
     fontSize: 16,
     fontFamily: 'MaruBuri-Regular',
+    color: '#000000',
+    outline: 'none',
+    border: 'none',
+    backgroundColor: 'transparent',
+    width: '100%',
   },
   eye: {
     position: 'absolute',
@@ -49,5 +59,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 1,
   },
 });
