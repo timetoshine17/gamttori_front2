@@ -16,24 +16,14 @@ export default function Footer({ style }: { style?: object }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const tabType = tabTypeZustand(s => s.tabType);
-  const setTabType = tabTypeZustand(s => s.setTabType);
-  const currentApp = currentAppZustand(s => s.currentApp);
-  const setCurrentApp = currentAppZustand(s => s.setCurrentApp);
+  // 현재 활성 탭 확인
+  const getCurrentTab = () => {
+    if (pathname.includes('/records')) return 'Records';
+    if (pathname.includes('/story')) return 'Story';
+    return 'Home';
+  };
 
-  const activeRoot = useMemo(() => {
-    const seg = pathname.split('/').filter(Boolean).find(s => !s.startsWith('(')) ?? 'home';
-    return seg.toLowerCase(); // 'home' | 'records' | 'story'
-  }, [pathname]);
-
-  useEffect(() => {
-    const map: any = { home: 'Home', records: 'Records', story: 'Story' };
-    const next = map[activeRoot];
-    if (next && tabType !== next) setTabType(next);
-    if (next && currentApp !== next) setCurrentApp(next);
-  }, [activeRoot, tabType, currentApp]);
-
-  const colorFor = (key: string) => (tabType === key ? '#ec7600ff' : '#000000ff');
+  const currentTab = getCurrentTab();
 
   return (
     <View style={[styles.container, style]}>
@@ -43,14 +33,18 @@ export default function Footer({ style }: { style?: object }) {
           style={styles.tab}
           android_ripple={{ color: '#fff8ecff' }}
           onPress={() => {
-            if (tabType !== t.key) {
-              setTabType(t.key as any);
-              setCurrentApp(t.key);
-              router.push(t.path as any);
-            }
+            console.log('푸터 클릭:', t.path);
+            router.push(t.path as any);
           }}
         >
-          <CustomText weight="Bold" style={{ color: colorFor(t.key) }}>{t.label}</CustomText>
+          <CustomText 
+            weight="Bold" 
+            style={{ 
+              color: currentTab === t.key ? '#ec7600ff' : '#000000ff' 
+            }}
+          >
+            {t.label}
+          </CustomText>
         </Pressable>
       ))}
     </View>

@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { FlatList, Image, Pressable, StyleSheet, View } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
 import Card from '../_components/Card';
 import CustomText from '../_components/CustomText';
-import { useAuth } from '../_providers/AuthProvider';
 
 const DAYS = Array.from({ length: 30 }, (_, i) => i + 1);
 
@@ -11,17 +11,21 @@ export default function RecordsPage() {
   const { token, initialized } = useAuth();
   const data = useMemo(() => DAYS, []);
 
-  // 인증 확인 - 로그인되지 않은 경우 로그인 화면으로 이동
-  useEffect(() => {
-    if (initialized && !token) {
-      console.log('로그인되지 않은 상태, 로그인 화면으로 이동');
-      router.replace('/login');
-    }
-  }, [initialized, token]);
+  // 로그인 체크는 나중에 처리 (일단 화면 표시)
+  // useEffect(() => {
+  //   if (initialized && !token) {
+  //     console.log('로그인되지 않은 상태, 로그인 화면으로 이동');
+  //     router.replace('/login');
+  //   }
+  // }, [initialized, token]);
 
-  // 초기화되지 않았거나 토큰이 없으면 아무것도 렌더링하지 않음
-  if (!initialized || !token) {
-    return null;
+  // 초기화 중이면 로딩 화면 표시
+  if (!initialized) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f0f0f0' }}>
+        <CustomText>로딩 중...</CustomText>
+      </View>
+    );
   }
 
   return (

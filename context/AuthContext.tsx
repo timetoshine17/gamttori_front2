@@ -8,7 +8,7 @@ type AuthContextType = {
   signOut: () => Promise<void>;
 };
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
@@ -38,9 +38,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (t: string) => {
     console.log('AuthProvider: signIn 호출됨, 토큰:', t ? '존재함' : '없음');
-    setToken(t);
-    await AsyncStorage.setItem('auth_token', t);
-    console.log('AuthProvider: signIn 완료');
+    try {
+      setToken(t);
+      await AsyncStorage.setItem('auth_token', t);
+      console.log('AuthProvider: signIn 완료');
+    } catch (error) {
+      console.error('AuthProvider: signIn 오류:', error);
+      throw error;
+    }
   };
 
   const signOut = async () => {
@@ -48,24 +53,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.multiRemove(['auth_token', 'user_info']);
   };
 
-  const value = useMemo(() => ({ token, initialized, signIn, signOut }), [token, initialized]);
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  const value = useMemo(() => ({ 
+    token, 
+    initialized, 
+    signIn, 
+    signOut 
+  }), [token, initialized]);
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    console.error('useAuth must be used within AuthProvider');
-    // 개발 환경에서는 기본값을 반환하여 앱이 크래시되지 않도록 함
-    return {
-      token: null,
-      initialized: false,
-      signIn: async () => {},
-      signOut: async () => {}
-    };
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
-  return ctx;
+  return context;
 }
 
-// Default export 추가
 export default AuthProvider;

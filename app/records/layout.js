@@ -6,3 +6,4 @@ export default function RecordsLayout({ children }) {
     </div>
   );
 }
+

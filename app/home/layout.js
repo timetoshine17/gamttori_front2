@@ -6,3 +6,4 @@ export default function HomeLayout({ children }) {
     </div>
   );
 }
+

@@ -4,10 +4,10 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Image, ImageBackground, Pressable, StyleSheet, View } from 'react-native';
 import StoryModal from '../../components/StoryModal';
+import { useAuth } from '../../context/AuthContext';
 import { GAMTORI_DAYS } from '../../data/gamttoriDays';
 import { useProgress } from '../../store/progress';
 import CustomText from '../_components/CustomText';
-import { useAuth } from '../_providers/AuthProvider';
 import MoodModal from './mood';
 
 export default function HomePage() {
@@ -24,6 +24,14 @@ export default function HomePage() {
     console.log('홈 페이지 렌더링됨');
     console.log('initialized:', initialized);
     console.log('token:', token ? '존재함' : '없음');
+    console.log('AuthProvider가 정상적으로 작동 중입니다!');
+  }, [initialized, token]);
+
+  // 로그인 페이지로 리다이렉트 처리
+  useEffect(() => {
+    if (initialized && !token) {
+      router.replace('/login');
+    }
   }, [initialized, token]);
 
   // 랜덤 인사말 배열
@@ -41,14 +49,6 @@ export default function HomePage() {
     '안녕하세요! 오늘은 어떤 하루인가요?',
     '반가워요! 오늘 기분은 어떤가요?'
   ];
-
-  // 로그인 확인은 나중에 처리 (일단 홈 화면 표시)
-  // useEffect(() => {
-  //   if (initialized && !token) {
-  //     console.log('홈 페이지: 로그인되지 않은 상태, 로그인 페이지로 이동');
-  //     router.replace('/login');
-  //   }
-  // }, [initialized, token]);
 
   // n일차 계산 (가입일 기준)
   useEffect(() => {
@@ -123,6 +123,19 @@ export default function HomePage() {
 
   // 현재 일차에 해당하는 스토리 데이터 찾기
   const todayData = GAMTORI_DAYS.find((d) => d.day === currentDay);
+
+  // 로딩 중이거나 인증되지 않은 경우 처리
+  if (!initialized) {
+    return (
+      <View style={styles.loadingContainer}>
+        <CustomText style={styles.loadingText}>로딩 중...</CustomText>
+      </View>
+    );
+  }
+
+  if (!token) {
+    return null; // 리다이렉트가 useEffect에서 처리됨
+  }
 
   return (
     <ImageBackground 
@@ -209,6 +222,19 @@ export default function HomePage() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'flex-start' },
+
+  // 로딩 스타일
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#666',
+    fontFamily: 'MaruBuri-Regular',
+  },
 
    // 헤더
    header: {

@@ -3,16 +3,17 @@ import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../../context/AuthContext';
 import { userApi } from '../../src/_lib/api';
 import AuthInput from '../_components/AuthInput';
 import Button from '../_components/Button';
 import CustomText from '../_components/CustomText';
-import { useAuth } from '../_providers/AuthProvider';
 
 export default function LoginPage() {
   const { signIn, token, initialized } = useAuth();
   const [id, setId] = useState('');
   const [pw, setPw] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // 디버깅을 위한 로그
   useEffect(() => {
@@ -29,8 +30,22 @@ export default function LoginPage() {
     }
   }, [initialized, token]);
 
+  // 로딩 중이면 로딩 화면 표시
+  if (!initialized) {
+    return (
+      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+        <View style={styles.loadingContainer}>
+          <CustomText style={styles.loadingText}>로딩 중...</CustomText>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   const onLogin = async () => {
+    if (isLoggingIn) return; // 이미 로그인 중이면 중복 실행 방지
+    
     try {
+      setIsLoggingIn(true);
       console.log('로그인 버튼 클릭됨');
       console.log('입력된 이메일:', id);
       console.log('입력된 비밀번호:', pw ? '***' : '없음');
@@ -77,6 +92,8 @@ export default function LoginPage() {
       }
       
       Alert.alert('로그인 실패', errorMessage);
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -107,7 +124,12 @@ export default function LoginPage() {
         </View>
 
         <View style={styles.centerSection}>
-          <Button title="로그인 하기" size="xl" onPress={onLogin} />
+          <Button 
+            title={isLoggingIn ? "로그인 중..." : "로그인 하기"} 
+            size="xl" 
+            onPress={onLogin}
+            disabled={isLoggingIn}
+          />
         </View>
 
         <View style={styles.bottomSection}>
@@ -129,6 +151,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 24,
     paddingBottom: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#666',
+    fontFamily: 'MaruBuri-Regular',
   },
   topSection: {
     flex: 1,

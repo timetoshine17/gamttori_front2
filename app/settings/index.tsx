@@ -2,9 +2,9 @@ import { router } from 'expo-router';
 import React from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../_components/Button';
 import CustomText from '../_components/CustomText';
-import { useAuth } from '../_providers/AuthProvider';
 
 export default function SettingsPage() {
   const { signOut } = useAuth();

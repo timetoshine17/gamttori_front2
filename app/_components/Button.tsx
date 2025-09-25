@@ -18,20 +18,26 @@ const SIZE_STYLE: Record<Size, { height: number; radius: number; fontSize: numbe
   xl: { height: 64, radius: 14, fontSize: 18 }, // ← 아주 크게
 };
 
-export default function Button({ title, variant = 'primary', size = 'md', style, ...rest }: BtnProps) {
+export default function Button({ title, variant = 'primary', size = 'md', style, disabled, ...rest }: BtnProps) {
   const sz = SIZE_STYLE[size];
   return (
     <Pressable
       {...rest}
+      disabled={disabled}
       style={[
         styles.base,
         { height: sz.height, borderRadius: sz.radius },
         variant === 'primary' ? styles.primary : styles.ghost,
+        disabled && styles.disabled,
         style,
       ]}
       android_ripple={{ color: variant === 'primary' ? '#e5e7eb' : '#d1d5db' }}
     >
-      <CustomText weight="Bold" style={[variant === 'primary' ? styles.primaryTxt : styles.ghostTxt, { fontSize: sz.fontSize }]}>
+      <CustomText weight="Bold" style={[
+        variant === 'primary' ? styles.primaryTxt : styles.ghostTxt, 
+        { fontSize: sz.fontSize },
+        disabled && styles.disabledTxt
+      ]}>
         {title}
       </CustomText>
     </Pressable>
@@ -44,4 +50,6 @@ const styles = StyleSheet.create({
   primaryTxt: { color: '#fff' },
   ghost: { backgroundColor: '#f3f4f6', borderWidth: 1, borderColor: '#e5e7eb' },
   ghostTxt: { color: '#111827' },
+  disabled: { backgroundColor: '#d1d5db', opacity: 0.6 },
+  disabledTxt: { color: '#9ca3af' },
 });
