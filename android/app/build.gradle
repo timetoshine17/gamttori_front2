@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.juyeoun1207.gamttori_front'
+    namespace 'com.gamttori.app'
     defaultConfig {
-        applicationId 'com.juyeoun1207.gamttori_front'
+        applicationId 'com.gamttori.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

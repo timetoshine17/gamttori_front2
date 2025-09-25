@@ -1,4 +1,4 @@
-package com.juyeoun1207.gamttori_front
+package com.gamttori.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

@@ -1,7 +1,7 @@
 export default {
   expo: {
     name: "감또리네",
-    slug: "감또리네",
+    slug: "gamttori-app",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/happy_gamttori.png",
