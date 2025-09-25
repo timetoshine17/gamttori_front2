@@ -19,6 +19,7 @@ export default {
       supportsTablet: true
     },
     android: {
+      package: "com.gamttori.app",
       adaptiveIcon: {
         foregroundImage: "./assets/images/happy_gamttori.png",
         backgroundColor: "#ffffff"

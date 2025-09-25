@@ -1,9 +1,7 @@
 // app/_components/Footer.tsx
 import { usePathname, useRouter } from 'expo-router';
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import currentAppZustand from '../../store/currentApp';
-import tabTypeZustand from '../../store/tabType';
 import CustomText from './CustomText';
 
 const TABS = [
