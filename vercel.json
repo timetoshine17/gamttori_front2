@@ -8,31 +8,5 @@
         "distDir": "dist"
       }
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/login",
-      "destination": "/login/login.html"
-    },
-    {
-      "source": "/home",
-      "destination": "/home/index.html"
-    },
-    {
-      "source": "/records",
-      "destination": "/records/index.html"
-    },
-    {
-      "source": "/story",
-      "destination": "/story/index.html"
-    },
-    {
-      "source": "/settings",
-      "destination": "/settings/Settings.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
   ]
 }
