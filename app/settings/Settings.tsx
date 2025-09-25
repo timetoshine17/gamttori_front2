@@ -20,7 +20,7 @@ export default function Settings() {
           style: 'destructive',
           onPress: async () => {
             await signOut();
-            router.replace('/login/login');
+            router.replace('/login');
           },
         },
       ]

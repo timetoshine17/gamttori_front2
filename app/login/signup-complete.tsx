@@ -40,7 +40,7 @@ export default function SignupComplete() {
           </View>
         </View>
 
-        <Button title="로그인하러 가기" size="xl" onPress={() => router.replace('/login/login')} />
+        <Button title="로그인하러 가기" size="xl" onPress={() => router.replace('/login')} />
       </View>
     </SafeAreaView>
   );

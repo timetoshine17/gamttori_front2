@@ -15,7 +15,7 @@ export default function Records() {
   useEffect(() => {
     if (initialized && !token) {
       console.log('로그인되지 않은 상태, 로그인 화면으로 이동');
-      router.replace('/login/login');
+      router.replace('/login');
     }
   }, [initialized, token]);
 

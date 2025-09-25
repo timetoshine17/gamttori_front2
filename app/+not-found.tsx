@@ -13,7 +13,7 @@ export default function NotFoundScreen() {
         <CustomText style={styles.description}>
           요청하신 페이지가 존재하지 않습니다.
         </CustomText>
-        <Link href="/login/login" style={styles.link}>
+        <Link href="/login" style={styles.link}>
           <CustomText weight="Medium" style={styles.linkText}>
             로그인 페이지로 이동
           </CustomText>

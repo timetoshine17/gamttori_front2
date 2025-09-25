@@ -3,15 +3,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Image,
-  ImageBackground,
-  LayoutChangeEvent,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
+    ActivityIndicator,
+    Image,
+    ImageBackground,
+    LayoutChangeEvent,
+    Modal,
+    Platform,
+    Pressable,
+    StyleSheet,
+    View,
 } from 'react-native';
 // @ts-ignore
 import { ResizeMode, Video } from 'expo-av';
@@ -157,7 +157,7 @@ export default function Story() {
   useEffect(() => {
     if (initialized && !token) {
       console.log('로그인되지 않은 상태, 로그인 화면으로 이동');
-      router.replace('/login/login');
+      router.replace('/login');
     }
   }, [initialized, token]);
 

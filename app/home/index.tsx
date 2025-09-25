@@ -38,7 +38,7 @@ export default function Home() {
   // 로그인 확인
   useEffect(() => {
     if (initialized && !token) {
-      router.replace('/login/login');
+      router.replace('/login');
     }
   }, [initialized, token]);
 
