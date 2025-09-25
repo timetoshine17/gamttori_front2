@@ -42,30 +42,13 @@ export default function HomePage() {
     '반가워요! 오늘 기분은 어떤가요?'
   ];
 
-  // 로그인 확인
-  useEffect(() => {
-    if (initialized && !token) {
-      console.log('홈 페이지: 로그인되지 않은 상태, 로그인 페이지로 이동');
-      router.replace('/login');
-    }
-  }, [initialized, token]);
-
-  // 초기화 중이거나 토큰이 없으면 로딩 화면 표시
-  if (!initialized) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-        <CustomText>로딩 중...</CustomText>
-      </View>
-    );
-  }
-
-  if (!token) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-        <CustomText>로그인이 필요합니다...</CustomText>
-      </View>
-    );
-  }
+  // 로그인 확인은 나중에 처리 (일단 홈 화면 표시)
+  // useEffect(() => {
+  //   if (initialized && !token) {
+  //     console.log('홈 페이지: 로그인되지 않은 상태, 로그인 페이지로 이동');
+  //     router.replace('/login');
+  //   }
+  // }, [initialized, token]);
 
   // n일차 계산 (가입일 기준)
   useEffect(() => {

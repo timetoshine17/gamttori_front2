@@ -4,34 +4,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import Footer from './_components/Footer';
-import { AuthProvider, useAuth } from './_providers/AuthProvider';
+import { AuthProvider } from './_providers/AuthProvider';
 
 // 스플래시 화면을 자동으로 숨기지 않게 설정
 SplashScreen.preventAutoHideAsync();
-
-function AppContent() {
-  const { token, initialized } = useAuth();
-  const pathname = usePathname();
-
-  // 홈/지난기록/이야기에서만 Footer 보이기
-  const showFooter = /^\/(home|records|story)(\/)?$/.test(pathname);
-
-  // 초기화 중일 때는 로딩 화면 표시
-  if (!initialized) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
-        {/* 로딩 인디케이터나 스플래시 화면 */}
-      </View>
-    );
-  }
-
-  return (
-    <View style={{ flex: 1 }}>
-      <Slot />
-      {showFooter && <Footer />}
-    </View>
-  );
-}
 
 export default function RootLayout() {
   useEffect(() => {
@@ -46,7 +22,9 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <AppContent />
+      <View style={{ flex: 1 }}>
+        <Slot />
+      </View>
     </AuthProvider>
   );
 }
