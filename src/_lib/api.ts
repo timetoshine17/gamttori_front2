@@ -7,11 +7,11 @@ export const API_CONFIG = {
   // 백엔드 연결을 사용할지 여부 (true로 설정하여 백엔드 연결 활성화)
   ENABLE_BACKEND: true, // ← 이 값을 true로 설정하여 백엔드 연결 활성화
   
-  // 연결 타임아웃 (밀리초)
-  TIMEOUT: 5000,
+  // 연결 타임아웃 (밀리초) - 폰에서는 더 길게 설정
+  TIMEOUT: 10000,
   
   // 재시도 횟수
-  RETRY_COUNT: 2,
+  RETRY_COUNT: 3,
 };
 
 // API 호출 래퍼 함수
@@ -36,6 +36,7 @@ export async function apiCall<T>(
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         ...options.headers,
       },
     });
@@ -56,6 +57,14 @@ export async function apiCall<T>(
   } catch (error) {
     clearTimeout(timeoutId);
     console.error('API 호출 오류:', error);
+    
+    // 폰에서의 네트워크 에러를 더 자세히 처리
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      throw new Error('네트워크 연결을 확인해주세요. 인터넷 연결 상태를 확인하고 다시 시도해주세요.');
+    } else if (error.name === 'AbortError') {
+      throw new Error('요청 시간이 초과되었습니다. 네트워크 상태를 확인하고 다시 시도해주세요.');
+    }
+    
     throw error;
   }
 }

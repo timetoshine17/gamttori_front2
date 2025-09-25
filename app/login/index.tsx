@@ -54,9 +54,22 @@ export default function LoginPage() {
         Alert.alert('입력 오류', '이메일과 비밀번호를 입력해주세요.');
         return;
       }
+
+      // 폰에서 네트워크 연결 확인
+      console.log('네트워크 연결 상태 확인 중...');
+      try {
+        const testResponse = await fetch('https://www.google.com', { 
+          method: 'HEAD',
+          mode: 'no-cors'
+        });
+        console.log('네트워크 연결 확인됨');
+      } catch (networkError) {
+        console.warn('네트워크 연결 확인 실패:', networkError);
+      }
       
       console.log('API 호출 시작...');
       console.log('API_BASE:', 'https://gamttori-back0917.vercel.app/api');
+      console.log('폰에서 로그인 시도 중...');
       
       // 백엔드 API를 통한 로그인
       const response = await userApi.login(id, pw);
@@ -85,9 +98,11 @@ export default function LoginPage() {
       if (e.message) {
         errorMessage = e.message;
       } else if (e.name === 'TypeError' && e.message.includes('fetch')) {
-        errorMessage = '네트워크 연결을 확인해주세요.';
+        errorMessage = '네트워크 연결을 확인해주세요. 인터넷 연결 상태를 확인하고 다시 시도해주세요.';
       } else if (e.name === 'AbortError') {
-        errorMessage = '요청 시간이 초과되었습니다.';
+        errorMessage = '요청 시간이 초과되었습니다. 네트워크 상태를 확인하고 다시 시도해주세요.';
+      } else if (e.message.includes('Failed to fetch')) {
+        errorMessage = '서버에 연결할 수 없습니다. 인터넷 연결을 확인해주세요.';
       }
       
       Alert.alert('로그인 실패', errorMessage);
