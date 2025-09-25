@@ -3,16 +3,6 @@ const nextConfig = {
   // Expo Router를 위한 SPA 설정
   trailingSlash: true,
   
-  // 모든 경로를 index.html로 rewrite (SPA 라우팅 지원)
-  async rewrites() {
-    return [
-      {
-        source: '/((?!api|_next/static|_next/image|favicon.ico|_expo|assets).*)',
-        destination: '/',
-      },
-    ];
-  },
-  
   // Vercel 배포를 위한 설정
   output: 'export',
   distDir: 'dist',
@@ -32,10 +22,41 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   
-  // Vercel 최적화 설정
-  experimental: {
-    esmExternals: false,
-  },
+  // Transpile packages
+  transpilePackages: [
+    'expo-router',
+    'expo-modules-core',
+    'expo-linking',
+    'expo-constants',
+    'expo-font',
+    'expo-splash-screen',
+    'expo-status-bar',
+    'expo-system-ui',
+    'expo-web-browser',
+    'expo-av',
+    'expo-blur',
+    'expo-haptics',
+    'expo-image',
+    'expo-speech',
+    'expo-symbols',
+    'react-native',
+    'react-native-web',
+    'react-native-screens',
+    'react-native-safe-area-context',
+    'react-native-gesture-handler',
+    'react-native-reanimated',
+    'react-native-svg',
+    'react-native-webview',
+    'react-native-chart-kit',
+    'react-native-tts',
+    '@react-navigation/native',
+    '@react-navigation/bottom-tabs',
+    '@react-navigation/elements',
+    '@react-native-async-storage/async-storage',
+    '@supabase/supabase-js',
+    '@tanstack/react-query',
+    'zustand',
+  ],
 };
 
 module.exports = nextConfig;

@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "build": "expo export --platform web",
-    "vercel-build": "next build",
+    "vercel-build": "expo export --platform web",
     "next-build": "next build",
     "next-export": "next export"
   },
