@@ -16,8 +16,14 @@ function Gate() {
   // 홈/지난기록/이야기에서만 Footer 보이기
   const showFooter = /^\/(home|records|story)(\/)?$/.test(pathname);
 
-  // 토큰 복원 전에는 아무 것도 렌더하지 않음 (스플래시 유지 느낌)
-  if (!initialized) return null;
+  // 초기화 중일 때는 로딩 화면 표시
+  if (!initialized) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+        {/* 로딩 인디케이터나 스플래시 화면 */}
+      </View>
+    );
+  }
 
   return (
     <View style={{ flex: 1 }}>
