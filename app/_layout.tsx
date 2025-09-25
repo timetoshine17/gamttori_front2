@@ -21,7 +21,9 @@ function AppContent() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Slot />
+      <View style={{ flex: 1 }}>
+        <Slot />
+      </View>
       {showFooter && <Footer />}
     </View>
   );

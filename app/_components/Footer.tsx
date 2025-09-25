@@ -52,6 +52,19 @@ export default function Footer({ style }: { style?: object }) {
 }
 
 const styles = StyleSheet.create({
-  container: { width: '100%', flexDirection: 'row', backgroundColor: '#ffffffff' },
-  tab: { width: '33%', height: 70, justifyContent: 'center', alignItems: 'center' },
+  container: { 
+    width: '100%', 
+    flexDirection: 'row', 
+    backgroundColor: '#ffffffff',
+    paddingBottom: 20, // 시스템 네비게이션 바와의 간격
+    paddingTop: 10, // 상단 여백
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb', // 상단 구분선
+  },
+  tab: { 
+    width: '33%', 
+    height: 60, // 높이를 약간 줄임
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
 });
