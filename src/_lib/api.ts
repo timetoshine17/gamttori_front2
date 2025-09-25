@@ -23,11 +23,15 @@ export async function apiCall<T>(
     throw new Error('백엔드 연결이 비활성화되어 있습니다. 캐시를 사용하세요.');
   }
 
+  const url = `${API_BASE}${endpoint}`;
+  console.log('API 호출:', url);
+  console.log('요청 옵션:', options);
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
 
   try {
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    const response = await fetch(url, {
       ...options,
       signal: controller.signal,
       headers: {
@@ -38,13 +42,20 @@ export async function apiCall<T>(
     
     clearTimeout(timeoutId);
     
+    console.log('API 응답 상태:', response.status, response.statusText);
+    
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('API 오류 응답:', errorText);
+      throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
     }
     
-    return await response.json();
+    const data = await response.json();
+    console.log('API 응답 데이터:', data);
+    return data;
   } catch (error) {
     clearTimeout(timeoutId);
+    console.error('API 호출 오류:', error);
     throw error;
   }
 }

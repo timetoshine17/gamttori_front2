@@ -41,6 +41,8 @@ export default function Login() {
       }
       
       console.log('API 호출 시작...');
+      console.log('API_BASE:', 'https://gamttori-back0917.vercel.app/api');
+      
       // 백엔드 API를 통한 로그인
       const response = await userApi.login(id, pw);
       console.log('API 응답:', response);
@@ -58,11 +60,23 @@ export default function Login() {
         // replace 대신 push를 사용하여 네비게이션 스택을 유지
         router.push('/home');
       } else {
-        throw new Error('로그인에 실패했습니다.');
+        throw new Error(response.message || '로그인에 실패했습니다.');
       }
     } catch (e: any) {
       console.error('로그인 오류:', e);
-      Alert.alert('로그인 실패', e?.message ?? '다시 시도해주세요.');
+      console.error('오류 상세:', e.stack);
+      
+      let errorMessage = '다시 시도해주세요.';
+      
+      if (e.message) {
+        errorMessage = e.message;
+      } else if (e.name === 'TypeError' && e.message.includes('fetch')) {
+        errorMessage = '네트워크 연결을 확인해주세요.';
+      } else if (e.name === 'AbortError') {
+        errorMessage = '요청 시간이 초과되었습니다.';
+      }
+      
+      Alert.alert('로그인 실패', errorMessage);
     }
   };
 
