@@ -155,6 +155,7 @@ export default function StoryPage() {
   const [videoError, setVideoError] = useState<string | null>(null);
   const [videoLoading, setVideoLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
+  const [loadingTimeout, setLoadingTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   // 네트워크 연결 상태 확인 (임시로 비활성화)
   useEffect(() => {
@@ -226,6 +227,11 @@ export default function StoryPage() {
   };
 
   const closeVideoModal = () => {
+    // 기존 타임아웃 클리어
+    if (loadingTimeout) {
+      clearTimeout(loadingTimeout);
+      setLoadingTimeout(null);
+    }
     setShowVideoModal(false);
     setSelectedVideo(null);
     setVideoError(null);
@@ -326,6 +332,7 @@ export default function StoryPage() {
                     <View style={styles.loadingContainer}>
                       <ActivityIndicator size="large" color="#0ea5e9" />
                       <CustomText style={styles.loadingText}>비디오를 불러오는 중...</CustomText>
+                      <CustomText style={styles.loadingSubText}>잠시만 기다려주세요 (최대 8초)</CustomText>
                     </View>
                   )}
                   
@@ -390,25 +397,45 @@ export default function StoryPage() {
                       resizeMode={ResizeMode.CONTAIN}
                       shouldPlay={false}
                       isLooping={false}
+                      progressUpdateIntervalMillis={1000}
+                      positionMillis={0}
+                      rate={1.0}
+                      volume={1.0}
+                      isMuted={false}
                       onLoadStart={() => {
                         console.log('비디오 로딩 시작');
                         setVideoLoading(true);
                         
-                        // 30초 타임아웃 설정
-                        setTimeout(() => {
-                          if (videoLoading) {
-                            console.log('비디오 로딩 타임아웃');
-                            setVideoLoading(false);
-                            setVideoError('비디오 로딩 시간이 초과되었습니다. 네트워크를 확인해주세요.');
-                          }
-                        }, 30000);
+                        // 기존 타임아웃 클리어
+                        if (loadingTimeout) {
+                          clearTimeout(loadingTimeout);
+                        }
+                        
+                        // 8초 타임아웃 설정 (10초 -> 8초로 단축)
+                        const timeout = setTimeout(() => {
+                          console.log('비디오 로딩 타임아웃');
+                          setVideoLoading(false);
+                          setVideoError('비디오 로딩 시간이 초과되었습니다. 네트워크를 확인해주세요.');
+                        }, 8000);
+                        
+                        setLoadingTimeout(timeout);
                       }}
                       onLoad={() => {
                         console.log('비디오 로딩 완료');
+                        // 타임아웃 클리어
+                        if (loadingTimeout) {
+                          clearTimeout(loadingTimeout);
+                          setLoadingTimeout(null);
+                        }
                         setVideoLoading(false);
                       }}
                       onError={(error) => {
                         console.error('Video error:', error);
+                        // 타임아웃 클리어
+                        if (loadingTimeout) {
+                          clearTimeout(loadingTimeout);
+                          setLoadingTimeout(null);
+                        }
                         setVideoLoading(false);
                         setVideoError(`비디오 로딩 실패: ${typeof error === 'string' ? error : '알 수 없는 오류'}`);
                       }}
@@ -574,6 +601,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     marginTop: 12,
+    fontFamily: 'MaruBuri-Regular',
+  },
+  loadingSubText: {
+    color: '#ccc',
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
     fontFamily: 'MaruBuri-Regular',
   },
   retryButton: {
