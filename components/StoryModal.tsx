@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backgroundBox: {
-    width: width * 0.9,
-    height: height * 0.75,
+    width: width * 0.45, // 0.9 -> 0.45로 절반으로 줄임
+    height: height * 0.375, // 0.75 -> 0.375로 절반으로 줄임
     borderRadius: 20,
     overflow: "hidden",
     backgroundColor: "#fff",
@@ -159,20 +159,20 @@ const styles = StyleSheet.create({
   },
   contentBox: {
     flex: 1,
-    padding: 20,
+    padding: 12, // 20 -> 12로 줄임
     justifyContent: "flex-end",
   },
   dayTitle: {
-    fontSize: 18,
+    fontSize: 16, // 18 -> 16으로 줄임
     fontWeight: "bold",
-    marginBottom: 12,
+    marginBottom: 8, // 12 -> 8로 줄임
     textAlign: "center",
     fontFamily: "MaruBuri-Bold",
   },
   speechBubble: {
-    marginBottom: 10,
-    padding: 12,
-    borderRadius: 16,
+    marginBottom: 8, // 10 -> 8로 줄임
+    padding: 8, // 12 -> 8로 줄임
+    borderRadius: 12, // 16 -> 12로 줄임
     maxWidth: "85%",
   },
   gamtoriBubble: {
@@ -204,25 +204,25 @@ const styles = StyleSheet.create({
     fontFamily: "MaruBuri-Regular",
   },
   nextBtn: {
-    marginTop: 20,
+    marginTop: 12, // 20 -> 12로 줄임
     backgroundColor: "#4CAF50",
-    paddingVertical: 12,
-    borderRadius: 10,
+    paddingVertical: 8, // 12 -> 8로 줄임
+    borderRadius: 6, // 10 -> 6으로 줄임
   },
   nextBtnText: {
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 14, // 16 -> 14로 줄임
     color: "#fff",
     fontWeight: "600",
     fontFamily: "MaruBuri-SemiBold",
   },
   skipButton: {
     position: "absolute",
-    top: 15,
-    right: 15,
-    width: 35,
-    height: 35,
-    borderRadius: 17.5,
+    top: 10, // 15 -> 10으로 줄임
+    right: 10, // 15 -> 10으로 줄임
+    width: 28, // 35 -> 28로 줄임
+    height: 28, // 35 -> 28로 줄임
+    borderRadius: 14, // 17.5 -> 14로 줄임
     backgroundColor: "rgba(0, 0, 0, 0.1)",
     justifyContent: "center",
     alignItems: "center",
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   skipButtonText: {
-    fontSize: 18,
+    fontSize: 14, // 18 -> 14로 줄임
     color: "#666",
     fontWeight: "bold",
     textAlign: "center",

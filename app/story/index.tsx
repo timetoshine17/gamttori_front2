@@ -1,8 +1,10 @@
 // app/story/page.tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import NetInfo from '@react-native-community/netinfo';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
+    Alert,
     Image,
     ImageBackground,
     LayoutChangeEvent,
@@ -151,6 +153,14 @@ export default function StoryPage() {
   const [selectedVideo, setSelectedVideo] = useState<StoryVideo | null>(null);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [videoError, setVideoError] = useState<string | null>(null);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [isConnected, setIsConnected] = useState(true);
+
+  // 네트워크 연결 상태 확인 (임시로 비활성화)
+  useEffect(() => {
+    // NetInfo가 설치되면 활성화
+    setIsConnected(true);
+  }, []);
 
   // 로그인 체크는 나중에 처리 (일단 화면 표시)
   // useEffect(() => {
@@ -179,11 +189,39 @@ export default function StoryPage() {
     if (video) {
       console.log('선택된 비디오:', video);
       console.log('비디오 URL:', video.videoUrl);
+      
+      // 네트워크 연결 확인
+      if (!isConnected) {
+        Alert.alert(
+          '인터넷 연결 필요',
+          '비디오를 재생하려면 인터넷 연결이 필요합니다.',
+          [{ text: '확인' }]
+        );
+        return;
+      }
+      
+      // URL 유효성 검사
+      if (!video.videoUrl || !video.videoUrl.startsWith('http')) {
+        Alert.alert(
+          '비디오 오류',
+          '비디오 URL이 유효하지 않습니다.',
+          [{ text: '확인' }]
+        );
+        return;
+      }
+      
+      setVideoError(null);
+      setVideoLoading(true);
       setSelectedVideo(video);
       setShowVideoModal(true);
     } else {
       console.log('비디오를 찾을 수 없습니다. targetDay:', targetDay);
       console.log('사용 가능한 비디오들:', storyVideos);
+      Alert.alert(
+        '비디오 없음',
+        '해당 일차의 비디오를 찾을 수 없습니다.',
+        [{ text: '확인' }]
+      );
     }
   };
 
@@ -191,6 +229,7 @@ export default function StoryPage() {
     setShowVideoModal(false);
     setSelectedVideo(null);
     setVideoError(null);
+    setVideoLoading(false);
   };
 
   useEffect(() => {
@@ -283,6 +322,13 @@ export default function StoryPage() {
                     </Pressable>
                   </View>
                   
+                  {videoLoading && (
+                    <View style={styles.loadingContainer}>
+                      <ActivityIndicator size="large" color="#0ea5e9" />
+                      <CustomText style={styles.loadingText}>비디오를 불러오는 중...</CustomText>
+                    </View>
+                  )}
+                  
                   {videoError ? (
                     <View style={styles.errorContainer}>
                       <CustomText style={styles.errorText}>
@@ -291,8 +337,17 @@ export default function StoryPage() {
                       <CustomText style={styles.errorSubText}>
                         URL: {selectedVideo.videoUrl}
                       </CustomText>
+                      <Pressable
+                        onPress={() => {
+                          setVideoError(null);
+                          setVideoLoading(true);
+                        }}
+                        style={styles.retryButton}
+                      >
+                        <CustomText style={styles.retryButtonText}>다시 시도</CustomText>
+                      </Pressable>
                     </View>
-                  ) : Platform.OS === 'web' ? (
+                  ) : !videoLoading && Platform.OS === 'web' ? (
                     <WebView
                       source={{ 
                         html: `
@@ -322,20 +377,50 @@ export default function StoryPage() {
                         setVideoError('WebView 로딩 실패');
                       }}
                     />
-                  ) : (
+                  ) : !videoLoading ? (
                     <Video
-                      source={{ uri: selectedVideo.videoUrl }}
+                      source={{ 
+                        uri: selectedVideo.videoUrl,
+                        headers: {
+                          'User-Agent': 'Mozilla/5.0 (compatible; GamttoriApp/1.0)',
+                        }
+                      }}
                       style={styles.videoPlayer}
                       useNativeControls
                       resizeMode={ResizeMode.CONTAIN}
-                      shouldPlay={true}
+                      shouldPlay={false}
                       isLooping={false}
+                      onLoadStart={() => {
+                        console.log('비디오 로딩 시작');
+                        setVideoLoading(true);
+                        
+                        // 30초 타임아웃 설정
+                        setTimeout(() => {
+                          if (videoLoading) {
+                            console.log('비디오 로딩 타임아웃');
+                            setVideoLoading(false);
+                            setVideoError('비디오 로딩 시간이 초과되었습니다. 네트워크를 확인해주세요.');
+                          }
+                        }, 30000);
+                      }}
+                      onLoad={() => {
+                        console.log('비디오 로딩 완료');
+                        setVideoLoading(false);
+                      }}
                       onError={(error) => {
                         console.error('Video error:', error);
-                        setVideoError('비디오 로딩 실패');
+                        setVideoLoading(false);
+                        setVideoError(`비디오 로딩 실패: ${typeof error === 'string' ? error : '알 수 없는 오류'}`);
+                      }}
+                      onPlaybackStatusUpdate={(status) => {
+                        if (status.isLoaded && 'error' in status && status.error) {
+                          console.error('Playback error:', status.error);
+                          setVideoLoading(false);
+                          setVideoError(`비디오 재생 실패: ${typeof status.error === 'string' ? status.error : '알 수 없는 오류'}`);
+                        }
                       }}
                     />
-                  )}
+                  ) : null}
                   
                   {selectedVideo.description && (
                     <CustomText style={styles.videoDescription}>
@@ -478,5 +563,31 @@ const styles = StyleSheet.create({
     color: '#7f1d1d',
     fontSize: 12,
     textAlign: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#000',
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 16,
+    marginTop: 12,
+    fontFamily: 'MaruBuri-Regular',
+  },
+  retryButton: {
+    marginTop: 16,
+    backgroundColor: '#dc2626',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignSelf: 'center',
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontFamily: 'MaruBuri-SemiBold',
   },
 });

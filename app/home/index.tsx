@@ -365,7 +365,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginBottom: 120, // 180 -> 120으로 줄여서 캐릭터를 아래로 이동
     alignItems: 'flex-end', // 오른쪽 정렬 추가
-    paddingRight: 20, // 오른쪽 여백 추가
+    paddingRight: 40, // 20 -> 40으로 증가하여 더 오른쪽으로 이동
   },
   mascot: { width: 200, height: 200 },
 
