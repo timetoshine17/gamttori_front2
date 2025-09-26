@@ -41,18 +41,56 @@ export default function HomePage() {
 
   // 랜덤 인사말 배열
   const greetings = [
-    '만나서 반가워요!',
-    '안녕하세요! 오늘도 좋은 하루에요!',
+    '오늘 하루도 충분히 잘해내셨어요.',
+    '오늘 마음속에 떠오르는 노래가 있나요?',
+    '오늘 떠오른 생각 중 잊고 싶지 않은 건 무엇인가요?',
+    '오늘도 감또리랑 행복한 시간을 보내요!',
+    '지금 창밖 풍경은 어떤가요?',
+    '오늘도 당신이 있어 세상이 더 빛나요.',
     '어떤 하루를 보내고 계신가요?',
-    '오늘도 감또리와 함께해요!',
-    '기분이 어떤가요?',
-    '오늘은 어떤 이야기를 나눌까요?',
-    '반가워요! 오늘 하루는 어땠나요?',
-    '안녕! 오늘도 힘내요!',
-    '어떤 기분으로 하루를 시작하셨나요?',
+    '힘들 땐 감또리가 옆에 있을게요.',
+    '당신은 충분히 잘하고 있어요.',
+    '오늘 하루의 소소한 행복은 뭐였나요?',
+    '오랜만이에요! 잘 지내셨나요?',
+    '오늘도 당신의 하루를 응원해요!',
+    '당신의 이야기가 감또리에게는 선물 같아요.',
     '오늘도 함께해요!',
-    '안녕하세요! 오늘은 어떤 하루인가요?',
-    '반가워요! 오늘 기분은 어떤가요?'
+    '오늘 마음을 울린 말 한마디가 있나요?',
+    '만나서 반가워요!',
+    '오늘 작은 목표는 무엇인가요?',
+    '오늘도 마음을 나눠줘서 고마워요.',
+    '오늘 하루 중 가장 기억에 남는 순간은 언제인가요?',
+    '오늘은 어떤 마음으로 살아가고 싶으신가요?',
+    '오늘도 새로운 하루가 시작됐네요!',
+    '안녕하세요! 오늘은 어떤 하루였나요?',
+    '당신의 하루는 소중해요.',
+    '오늘 웃었던 순간이 있었나요?',
+    '요즘 가장 기다려지는 순간은 언제인가요?',
+    '행복으로 가득한 하루 되시길 바라요!',
+    '오늘은 어제보다 더 따뜻한 하루가 되길 바라요.',
+    '오늘 스스로를 칭찬하고 싶은 일은 무엇인가요?',
+    '반가워요! 오늘 하루는 어땠나요?',
+    '오늘 스스로에게 해주고 싶은 말은 무엇인가요?',
+    '오늘 누군가와 나눈 대화 중 가장 따뜻했던 말은 무엇인가요?',
+    '안녕하세요! 감또리가 기다렸어요.',
+    '반가워요! 지금 마음은 편안하신가요?',
+    '지금 기분을 색깔로 표현하면 어떤 색일까요?',
+    '지금 떠올리고 싶은 사람이 있나요?',
+    '오늘 하루는 어떤 색으로 빛나고 있나요?',
+    '힘들 때 잠시 쉬어가도 괜찮아요.',
+    '반가워요! 오늘 기분은 어떤가요?',
+    '오늘은 어떤 이야기를 나눌까요?',
+    '오늘 가장 감사한 순간은 무엇이었나요?',
+    '오늘 하루 중 고마움을 느낀 순간이 있었나요?',
+    '오늘 하루는 감또리와 함께해요!',
+    '지금 가장 듣고 싶은 말은 무엇인가요?',
+    '오늘 하루도 보람찬 하루를 보냈나요?',
+    '작은 한 걸음이 모여 큰 길이 돼요.',
+    '오늘 하루를 한 단어로 표현한다면 어떤 말이 어울릴까요?',
+    '안녕하세요! 오늘도 힘내요!',
+    '스스로를 믿고 한 발짝 나아가 보아요.',
+    '안녕하세요! 오늘도 좋은 하루예요!',
+    '오늘은 어떤 기분으로 하루를 시작하셨나요?'
   ];
 
   // n일차 계산 (가입일 기준)
@@ -119,15 +157,20 @@ export default function HomePage() {
 
   // 스토리 모달 표시 로직
   useEffect(() => {
-    const today = new Date().toISOString().split("T")[0];
-    if (lastShownDate !== today) {
-      setShowStoryModal(true);
-      setShown(today);
+    try {
+      const today = new Date().toISOString().split("T")[0];
+      if (lastShownDate !== today) {
+        console.log('스토리 모달 표시:', { lastShownDate, today });
+        setShowStoryModal(true);
+        setShown(today);
+      }
+    } catch (error) {
+      console.error('스토리 모달 표시 오류:', error);
     }
   }, [lastShownDate, setShown]);
 
-  // 현재 일차에 해당하는 스토리 데이터 찾기
-  const todayData = GAMTORI_DAYS.find((d) => d.day === currentDay);
+  // 현재 일차에 해당하는 스토리 데이터 찾기 (count 값 사용)
+  const todayData = GAMTORI_DAYS.find((d) => d.day === count);
 
   // 로딩 중이거나 인증되지 않은 경우 처리
   if (!initialized) {
@@ -217,7 +260,15 @@ export default function HomePage() {
       {todayData && (
         <StoryModal
           visible={showStoryModal}
-          onClose={() => setShowStoryModal(false)}
+          onClose={() => {
+            try {
+              console.log('스토리 모달 닫기');
+              setShowStoryModal(false);
+            } catch (error) {
+              console.error('스토리 모달 닫기 오류:', error);
+              setShowStoryModal(false);
+            }
+          }}
           day={todayData}
         />
       )}
@@ -272,7 +323,10 @@ const styles = StyleSheet.create({
      alignItems: 'center',
      zIndex: 1,
    },
-   settingsText: { fontSize: 20 },
+   settingsText: { 
+     fontSize: 20,
+     fontFamily: 'MaruBuri-Regular',
+   },
 
   // 말풍선 버튼
   bubbleButtons: {
@@ -309,16 +363,18 @@ const styles = StyleSheet.create({
   mascotContainer: {
     flex: 1,
     justifyContent: 'flex-end',
-    marginBottom: 120,
+    marginBottom: 120, // 180 -> 120으로 줄여서 캐릭터를 아래로 이동
+    alignItems: 'flex-end', // 오른쪽 정렬 추가
+    paddingRight: 20, // 오른쪽 여백 추가
   },
   mascot: { width: 200, height: 200 },
 
    // 답변 말풍선
    replyBubble: {
      position: 'absolute',
-     bottom: 350,
+     bottom: 280, // 350 -> 280으로 아래로 이동
      left: 20,
-     right: 20,
+     right: '50%', // right: 20 -> right: '50%'로 변경하여 왼쪽 절반만 사용
      backgroundColor: '#fff',
      borderRadius: 20,
      paddingHorizontal: 20,
@@ -328,8 +384,8 @@ const styles = StyleSheet.create({
      shadowOffset: { width: 2, height: 2 },
      shadowRadius: 8,
      elevation: 5,
-     maxWidth: '80%',
-     alignSelf: 'center',
+     maxWidth: '45%', // 80% -> 45%로 줄여서 왼쪽에만 위치
+     alignSelf: 'flex-start', // center -> flex-start로 변경하여 왼쪽 정렬
    },
    replyText: { 
      fontSize: 18, 
@@ -341,7 +397,7 @@ const styles = StyleSheet.create({
    bubbleTail: {
      position: 'absolute',
      bottom: -8,
-     right: 30,
+     right: 20, // 30 -> 20으로 조정하여 왼쪽 정렬에 맞게
      width: 0,
      height: 0,
      borderLeftWidth: 12,

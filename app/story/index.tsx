@@ -2,15 +2,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Image,
-  ImageBackground,
-  LayoutChangeEvent,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
+    ActivityIndicator,
+    Image,
+    ImageBackground,
+    LayoutChangeEvent,
+    Modal,
+    Platform,
+    Pressable,
+    StyleSheet,
+    View,
 } from 'react-native';
 // @ts-ignore
 import { ResizeMode, Video } from 'expo-av';
@@ -224,7 +224,7 @@ export default function StoryPage() {
         </View>
 
         {/* 서브타이틀 */}
-        <CustomText style={styles.subtitle}>감또리, 이렇게 성장했어요!</CustomText>
+        <CustomText style={styles.subtitle}>감또리의 숨겨진 이야기, 우리 같이 볼까요?</CustomText>
 
 
         {/* 로딩 중 */}

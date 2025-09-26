@@ -4,13 +4,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { API_CONFIG, poemApi, recordApi, type Poem } from '../../src/_lib/api';
+import AdvancedSTTButton from '../_components/AdvancedSTTButton';
 import Button from '../_components/Button';
 import Card from '../_components/Card';
 import CustomText from '../_components/CustomText';
 import PoemTTSButton from '../_components/PoemTTSButton';
 import TextArea from '../_components/TextArea';
 import TTSButton from '../_components/TTSButton';
-import AdvancedSTTButton from '../_components/AdvancedSTTButton';
 
 type Step = 0 | 1;
 
@@ -22,6 +22,7 @@ export default function Poem() {
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
+  const [currentDay, setCurrentDay] = useState(1); // 현재 일차 상태
 
   const titles = useMemo(
     () => ['읽기', '답변하기'],
@@ -35,6 +36,41 @@ export default function Poem() {
     }
   }, [urlStep]);
 
+  // 현재 일차 계산
+  useEffect(() => {
+    const calculateCurrentDay = async () => {
+      try {
+        // 가입일 가져오기
+        const joinDateStr = await AsyncStorage.getItem('user_join_date');
+        let joinDate: Date;
+        
+        if (joinDateStr) {
+          joinDate = new Date(joinDateStr);
+        } else {
+          // 가입일이 없으면 오늘을 가입일로 설정
+          joinDate = new Date();
+          await AsyncStorage.setItem('user_join_date', joinDate.toISOString());
+        }
+        
+        // 오늘과 가입일의 차이 계산
+        const today = new Date();
+        const timeDiff = today.getTime() - joinDate.getTime();
+        const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        
+        // 최소 1일차로 설정
+        const dayCount = Math.max(1, daysDiff);
+        setCurrentDay(dayCount);
+        
+        console.log('시 페이지 일차 계산:', { joinDate, today, daysDiff, dayCount });
+      } catch (error) {
+        console.error('일차 계산 오류:', error);
+        setCurrentDay(1);
+      }
+    };
+
+    calculateCurrentDay();
+  }, []);
+
   useEffect(() => {
     const fetchPoem = async () => {
       try {
@@ -44,8 +80,8 @@ export default function Poem() {
         if (API_CONFIG.ENABLE_BACKEND) {
           try {
             const [poemResponse, questionsResponse] = await Promise.all([
-              poemApi.getPoemByDay(1), // 1일차 시 직접 요청
-              poemApi.getQuestionsByDay(1) // 1일차 질문
+              poemApi.getPoemByDay(currentDay), // 현재 일차 시 요청
+              poemApi.getQuestionsByDay(currentDay) // 현재 일차 질문
             ]);
             
             if (!poemResponse.success) throw new Error('오늘의 시 로드 실패');
@@ -92,7 +128,7 @@ export default function Poem() {
           // 캐시도 없는 경우 기본 시 데이터 사용
           const defaultPoem: Poem = {
             id: 0,
-            day: 1,
+            day: currentDay,
             date: new Date().toISOString(),
             title: '기본 시',
             author: '감또리',
@@ -112,7 +148,7 @@ export default function Poem() {
     };
 
     fetchPoem();
-  }, []);
+  }, [currentDay]);
 
   const goNext = () => setStep(s => (s < 1 ? ((s + 1) as Step) : s));
   const goPrev = () => {
@@ -147,7 +183,7 @@ export default function Poem() {
 
           // 백엔드에 답변 저장
           const response = await recordApi.updateRecordByDay(
-            poem?.day || 1, 
+            currentDay, 
             answers, 
             token
           );

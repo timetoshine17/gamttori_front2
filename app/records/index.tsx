@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useMemo } from 'react';
-import { FlatList, Image, Pressable, StyleSheet, View } from 'react-native';
+import { FlatList, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
 import Card from '../_components/Card';
 import CustomText from '../_components/CustomText';
@@ -29,7 +29,12 @@ export default function RecordsPage() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView 
+      style={styles.scrollContainer}
+      contentContainerStyle={styles.container}
+      showsVerticalScrollIndicator={true}
+      bounces={true}
+    >
       {/* 타이틀 */}
       <View style={styles.headRow}>
         <CustomText weight="Bold" style={styles.title}>지난 기록들</CustomText>
@@ -65,54 +70,64 @@ export default function RecordsPage() {
         </View>
 
         {/* 숫자 그리드 */}
-        <FlatList
-          data={data}
-          numColumns={6}
-          keyExtractor={(n) => String(n)}
-          contentContainerStyle={styles.gridContainer}
-          columnWrapperStyle={styles.gridRow}
-          renderItem={({ item }) => (
-            <Pressable
-              onPress={() => router.push(`/records/${item}`)}
-              style={[styles.numBtn, item === 1 && styles.recentBtn]}
-              android_ripple={{ color: '#e5e7eb' }}
-            >
-              <CustomText weight="Bold" style={[styles.numText, item === 1 && styles.recentText]}>
-                {item}
-              </CustomText>
-              {item === 1 && <CustomText style={styles.newBadge}>NEW</CustomText>}
-            </Pressable>
-          )}
-        />
+        <View style={styles.gridWrapper}>
+          <FlatList
+            data={data}
+            numColumns={6}
+            keyExtractor={(n) => String(n)}
+            contentContainerStyle={styles.gridContainer}
+            columnWrapperStyle={styles.gridRow}
+            scrollEnabled={true}
+            showsVerticalScrollIndicator={true}
+            nestedScrollEnabled={true}
+            style={styles.flatListStyle}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => router.push(`/records/${item}`)}
+                style={[styles.numBtn, item === 1 && styles.recentBtn]}
+                android_ripple={{ color: '#e5e7eb' }}
+              >
+                <CustomText weight="Bold" style={[styles.numText, item === 1 && styles.recentText]}>
+                  {item}
+                </CustomText>
+                {item === 1 && <CustomText style={styles.newBadge}>NEW</CustomText>}
+              </Pressable>
+            )}
+          />
+        </View>
       </Card>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
+  scrollContainer: {
+    flex: 1,
     backgroundColor: '#faf9f7', // 베이지/오프화이트 배경
-    padding: 16,
-    gap: 16,
+  },
+  container: { 
+    padding: 12, // 16 -> 12로 줄임
+    gap: 12, // 16 -> 12로 줄임
+    paddingBottom: 20, // 30 -> 20으로 줄임
   },
   headRow: { 
     flexDirection: 'row', 
     alignItems: 'center', 
     gap: 12, 
-    marginBottom: 16,
+    marginBottom: 12, // 16 -> 12로 줄임
   },
   title: { 
-    fontSize: 28, 
-    paddingTop: 40,
+    fontSize: 26, // 28 -> 26으로 줄임
+    paddingTop: 30, // 40 -> 30으로 줄임
     color: '#8b4513', // 따뜻한 갈색
     fontWeight: 'bold',
+    fontFamily: 'MaruBuri-Bold',
   },
   titleImg: { 
-    width: 60, 
-    marginTop: 30, 
+    width: 50, // 60 -> 50으로 줄임
+    marginTop: 20, // 30 -> 20으로 줄임
     marginLeft: 10, 
-    height: 60,
+    height: 50, // 60 -> 50으로 줄임
   },
   
   // 환영 카드
@@ -120,43 +135,46 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff3cd', // 연한 노란색
     borderLeftWidth: 4,
     borderLeftColor: '#ffc107', // 노란색 테두리
-    padding: 20,
+    padding: 12, // 20 -> 12로 줄임
     borderRadius: 12,
-    marginBottom: 16,
+    marginBottom: 12, // 16 -> 12로 줄임
   },
   welcomeContent: {
     alignItems: 'center',
   },
   starIcon: {
-    fontSize: 24,
-    marginBottom: 8,
+    fontSize: 20, // 24 -> 20으로 줄임
+    marginBottom: 6, // 8 -> 6으로 줄임
   },
   welcomeText: {
-    fontSize: 18,
+    fontSize: 16, // 18 -> 16으로 줄임
     color: '#6c757d', // 회색
-    marginBottom: 8,
+    marginBottom: 6, // 8 -> 6으로 줄임
     textAlign: 'center',
     fontWeight: '500',
+    fontFamily: 'MaruBuri-SemiBold',
   },
   welcomeSubtext: { 
-    fontSize: 14, 
+    fontSize: 12, // 14 -> 12로 줄임
     color: '#6c757d', // 회색
     textAlign: 'center',
+    fontFamily: 'MaruBuri-Regular',
   },
   
   // 일차 카드
   daysCard: {
     backgroundColor: '#ffffff',
     borderRadius: 12,
-    padding: 20,
+    padding: 16, // 20 -> 16으로 줄임
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    minHeight: 300, // 350 -> 300으로 줄임
   },
   daysHeader: {
-    marginBottom: 16,
+    marginBottom: 12, // 16 -> 12로 줄임
   },
   daysTitleContainer: {
     flexDirection: 'row',
@@ -171,25 +189,36 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#495057', // 진한 회색
     fontWeight: '600',
+    fontFamily: 'MaruBuri-SemiBold',
   },
   daysSubtitle: {
     fontSize: 14,
     color: '#6c757d', // 회색
+    fontFamily: 'MaruBuri-Regular',
   },
   
   // 그리드
+  gridWrapper: {
+    flex: 1,
+    minHeight: 250, // 300 -> 250으로 줄임
+  },
+  flatListStyle: {
+    flex: 1,
+  },
   gridContainer: {
-    gap: 12,
+    gap: 8, // 12 -> 8로 줄임
+    paddingBottom: 15, // 20 -> 15로 줄임
+    flexGrow: 1, // 스크롤 가능하도록
   },
   gridRow: {
-    gap: 12,
-    marginBottom: 12,
+    gap: 8, // 12 -> 8로 줄임
+    marginBottom: 8, // 12 -> 8로 줄임
   },
   numBtn: {
     flex: 1,
-    minWidth: 50,
-    height: 50,
-    borderRadius: 8,
+    minWidth: 40, // 50 -> 40으로 줄임
+    height: 40, // 50 -> 40으로 줄임
+    borderRadius: 6, // 8 -> 6으로 줄임
     backgroundColor: '#f8f9fa', // 연한 회색
     alignItems: 'center',
     justifyContent: 'center',
@@ -203,12 +232,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   numText: {
-    fontSize: 16,
+    fontSize: 14, // 16 -> 14로 줄임
     color: '#495057', // 진한 회색
     fontWeight: '600',
+    fontFamily: 'MaruBuri-SemiBold',
   },
   recentText: {
     color: '#ffc107', // 노란색
+    fontFamily: 'MaruBuri-SemiBold',
   },
   newBadge: {
     position: 'absolute',
@@ -221,5 +252,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     paddingVertical: 2,
     borderRadius: 6,
+    fontFamily: 'MaruBuri-Bold',
   },
 });
