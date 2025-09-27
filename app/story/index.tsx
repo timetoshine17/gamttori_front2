@@ -1,7 +1,7 @@
 // app/story/page.tsx
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // import NetInfo from '@react-native-community/netinfo';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
@@ -19,6 +19,7 @@ import { ResizeMode, Video } from 'expo-av';
 import { WebView } from 'react-native-webview';
 import { useAuth } from '../../context/AuthContext';
 import { API_CONFIG, storyVideoApi, type StoryVideo } from '../../src/_lib/api';
+import { useProgress } from '../../store/progress';
 import CustomText from '../_components/CustomText';
 
 const STONE_IMAGE = require('../../assets/images/stone.png');
@@ -138,15 +139,18 @@ async function fetchStoryVideos(): Promise<StoryVideo[]> {
   return defaultVideos;
 }
 
-// 조건: 해당 일차의 스토리 비디오가 있으면 보이기
-function isStoryUnlocked(storyVideos: StoryVideo[], stoneIdxZeroBased: number) {
+// 조건: 해당 일차에만 돌이 보이도록 설정
+function isStoryUnlocked(storyVideos: StoryVideo[], stoneIdxZeroBased: number, userCurrentDay: number) {
   const blockIndex = stoneIdxZeroBased + 1; // 1~10
   const targetDay = blockIndex * DAYS_PER_STONE; // 3, 6, 9, 12, 15, 18, 21, 24, 27, 30
-  return storyVideos.some(video => video.day === targetDay);
+  
+  // 해당 일차에만 돌이 보이도록 설정 (정확히 해당 일차일 때만)
+  return userCurrentDay === targetDay;
 }
 
 export default function StoryPage() {
   const { token, initialized } = useAuth();
+  const { currentDay } = useProgress();
   const [container, setContainer] = useState({ w: 0, h: 0 });
   const [storyVideos, setStoryVideos] = useState<StoryVideo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -280,10 +284,10 @@ export default function StoryPage() {
           </View>
         )}
 
-        {/* 돌 10개: 스토리 비디오가 있는 것만 렌더 */}
+        {/* 돌 10개: 해당 일차에만 렌더 */}
         {!loading && container.w > 0 && POSITIONS.map((p, idx) => {
-          if (!isStoryUnlocked(storyVideos, idx)) {
-            // 요구사항: 스토리 비디오가 있어야 "보이도록" ⇒ 없으면 아예 렌더하지 않음
+          if (!isStoryUnlocked(storyVideos, idx, currentDay || 1)) {
+            // 요구사항: 해당 일차에만 "보이도록" ⇒ 아니면 아예 렌더하지 않음
             return null;
           }
           const stoneSize = STONE_SIZES[idx];
@@ -505,8 +509,11 @@ const styles = StyleSheet.create({
   centerLabelText: {
     fontSize: 20,
     color: '#8B4513', // 어두운 갈색
+    // @ts-ignore - textShadow properties are deprecated but still work
     textShadowColor: 'rgba(255,255,255,0.8)',
+    // @ts-ignore
     textShadowOffset: { width: 0, height: 1 },
+    // @ts-ignore
     textShadowRadius: 2,
   },
 

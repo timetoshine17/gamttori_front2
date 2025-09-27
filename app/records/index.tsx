@@ -1,7 +1,8 @@
 import { router } from 'expo-router';
 import React, { useMemo } from 'react';
-import { FlatList, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, FlatList, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
+import { useProgress } from '../../store/progress';
 import Card from '../_components/Card';
 import CustomText from '../_components/CustomText';
 
@@ -9,7 +10,14 @@ const DAYS = Array.from({ length: 30 }, (_, i) => i + 1);
 
 export default function RecordsPage() {
   const { token, initialized } = useAuth();
-  const data = useMemo(() => DAYS, []);
+  const { currentDay } = useProgress();
+  
+  // 디버깅을 위한 로그
+  console.log('RecordsPage - currentDay:', currentDay);
+  
+  // 테스트용: currentDay가 없으면 1로 설정
+  const testCurrentDay = currentDay || 1;
+  console.log('RecordsPage - testCurrentDay:', testCurrentDay);
 
   // 로그인 체크는 나중에 처리 (일단 화면 표시)
   // useEffect(() => {
@@ -72,7 +80,7 @@ export default function RecordsPage() {
         {/* 숫자 그리드 */}
         <View style={styles.gridWrapper}>
           <FlatList
-            data={data}
+            data={DAYS}
             numColumns={6}
             keyExtractor={(n) => String(n)}
             contentContainerStyle={styles.gridContainer}
@@ -81,18 +89,48 @@ export default function RecordsPage() {
             showsVerticalScrollIndicator={true}
             nestedScrollEnabled={true}
             style={styles.flatListStyle}
-            renderItem={({ item }) => (
-              <Pressable
-                onPress={() => router.push(`/records/${item}`)}
-                style={[styles.numBtn, item === 1 && styles.recentBtn]}
-                android_ripple={{ color: '#e5e7eb' }}
-              >
-                <CustomText weight="Bold" style={[styles.numText, item === 1 && styles.recentText]}>
-                  {item}
-                </CustomText>
-                {item === 1 && <CustomText style={styles.newBadge}>NEW</CustomText>}
-              </Pressable>
-            )}
+            renderItem={({ item }) => {
+              // 현재 일차까지만 클릭 가능
+              const userCurrentDay = currentDay || 1;
+              const isClickable = item <= userCurrentDay;
+              const isLatestDay = item === userCurrentDay; // 가장 최신 일차
+              
+              const handlePress = () => {
+                console.log('버튼 클릭:', { item, currentDay, userCurrentDay, isClickable });
+                if (isClickable) {
+                  router.push(`/records/${item}`);
+                } else {
+                  console.log('Alert 표시 시도 - 미래일차 클릭');
+                  Alert.alert(
+                    '알림', 
+                    '앗 조금만 더 기다려주세요!',
+                    [{ text: '확인', style: 'default' }],
+                    { cancelable: true }
+                  );
+                }
+              };
+              
+              return (
+                <Pressable
+                  onPress={handlePress}
+                  style={[
+                    styles.numBtn, 
+                    isClickable && styles.recentBtn, // 열린 일차는 모두 1일차 색깔
+                    !isClickable && styles.futureBtn
+                  ]}
+                  android_ripple={{ color: '#e5e7eb' }}
+                >
+                  <CustomText weight="Bold" style={[
+                    styles.numText, 
+                    isClickable && styles.recentText, // 열린 일차는 모두 1일차 텍스트 색깔
+                    !isClickable && styles.futureText
+                  ]}>
+                    {item}
+                  </CustomText>
+                  {isLatestDay && <CustomText style={styles.newBadge}>NEW</CustomText>}
+                </Pressable>
+              );
+            }}
           />
         </View>
       </Card>
@@ -239,6 +277,24 @@ const styles = StyleSheet.create({
   },
   recentText: {
     color: '#ffc107', // 노란색
+    fontFamily: 'MaruBuri-SemiBold',
+  },
+  availableBtn: {
+    backgroundColor: '#fff3e0', // 연한 오렌지색 배경
+    borderColor: '#ff9800', // 오렌지색 테두리
+    borderWidth: 2,
+  },
+  availableText: {
+    color: '#ff9800', // 오렌지색 텍스트
+    fontFamily: 'MaruBuri-SemiBold',
+  },
+  futureBtn: {
+    backgroundColor: '#f5f5f5', // 연한 회색 배경
+    borderColor: '#bdbdbd', // 회색 테두리
+    opacity: 0.7,
+  },
+  futureText: {
+    color: '#9e9e9e', // 회색 텍스트
     fontFamily: 'MaruBuri-SemiBold',
   },
   newBadge: {

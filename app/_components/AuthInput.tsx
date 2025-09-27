@@ -47,8 +47,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'MaruBuri-Regular',
     color: '#000000',
-    outline: 'none',
-    border: 'none',
     backgroundColor: 'transparent',
     width: '100%',
   },

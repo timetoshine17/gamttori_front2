@@ -12,7 +12,7 @@ import MoodModal from './mood';
 
 export default function HomePage() {
   const { token, initialized } = useAuth();
-  const { lastShownDate, setShown, currentDay } = useProgress();
+  const { lastShownDate, setShown, currentDay, setCurrentDay } = useProgress();
   const [count, setCount] = useState(0);
   const [userInfo, setUserInfo] = useState<any>(null);
   const [showMoodModal, setShowMoodModal] = useState(false);
@@ -118,6 +118,9 @@ export default function HomePage() {
         const dayCount = Math.max(1, daysDiff);
         setCount(dayCount);
         
+        // progress store의 currentDay도 동기화
+        setCurrentDay(dayCount);
+        
         // 기존 gamttori_count도 업데이트 (호환성을 위해)
         await AsyncStorage.setItem('gamttori_count', String(dayCount));
       } catch (error) {
@@ -155,22 +158,34 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // 스토리 모달 표시 로직
+  // 스토리 모달 표시 로직 (하루에 한번만)
   useEffect(() => {
-    try {
-      const today = new Date().toISOString().split("T")[0];
-      if (lastShownDate !== today) {
-        console.log('스토리 모달 표시:', { lastShownDate, today });
-        setShowStoryModal(true);
-        setShown(today);
+    const checkAndShowStoryModal = async () => {
+      try {
+        const today = new Date().toISOString().split("T")[0];
+        
+        // AsyncStorage에서 마지막 표시 날짜 확인
+        const storedDate = await AsyncStorage.getItem('story_modal_last_shown');
+        
+        if (storedDate !== today) {
+          console.log('스토리 모달 표시:', { storedDate, today });
+          setShowStoryModal(true);
+          // AsyncStorage에 오늘 날짜 저장
+          await AsyncStorage.setItem('story_modal_last_shown', today);
+          setShown(today); // Update Zustand store as well
+        } else {
+          console.log('오늘 이미 스토리 모달을 표시했음:', today);
+        }
+      } catch (error) {
+        console.error('스토리 모달 표시 오류:', error);
       }
-    } catch (error) {
-      console.error('스토리 모달 표시 오류:', error);
-    }
-  }, [lastShownDate, setShown]);
+    };
 
-  // 현재 일차에 해당하는 스토리 데이터 찾기 (count 값 사용)
-  const todayData = GAMTORI_DAYS.find((d) => d.day === count);
+    checkAndShowStoryModal();
+  }, [setShown]); // Dependency on setShown from useProgress
+
+  // 현재 일차에 해당하는 스토리 데이터 찾기 (currentDay 값 사용)
+  const todayData = GAMTORI_DAYS.find((d) => d.day === (currentDay || count));
 
   // 로딩 중이거나 인증되지 않은 경우 처리
   if (!initialized) {
@@ -195,7 +210,7 @@ export default function HomePage() {
       <View style={styles.header}>
         <CustomText weight="Bold" style={styles.title}>감또리네</CustomText>
         <CustomText weight="Regular" style={styles.subtitle}>
-          {userInfo?.nickname || '000'}님과 함께한 지 {count}일차
+          {userInfo?.nickname || '000'}님과 함께한 지 {currentDay || count}일차
         </CustomText>
       </View>
 
@@ -372,27 +387,26 @@ const styles = StyleSheet.create({
    // 답변 말풍선
    replyBubble: {
      position: 'absolute',
-     bottom: 280, // 350 -> 280으로 아래로 이동
+     bottom: 200, // 280 -> 200으로 더 아래로 이동하여 버튼과 겹치지 않도록
      left: 20,
-     right: '50%', // right: 20 -> right: '50%'로 변경하여 왼쪽 절반만 사용
      backgroundColor: '#fff',
      borderRadius: 20,
-     paddingHorizontal: 20,
-     paddingVertical: 15,
+     paddingHorizontal: 16, // 20 -> 16으로 줄임
+     paddingVertical: 12, // 15 -> 12로 줄임
      shadowColor: '#000',
      shadowOpacity: 0.15,
      shadowOffset: { width: 2, height: 2 },
      shadowRadius: 8,
      elevation: 5,
-     maxWidth: '45%', // 80% -> 45%로 줄여서 왼쪽에만 위치
+     maxWidth: '35%', // 45% -> 35%로 더 좁게
      alignSelf: 'flex-start', // center -> flex-start로 변경하여 왼쪽 정렬
    },
    replyText: { 
-     fontSize: 18, 
+     fontSize: 16, // 18 -> 16으로 줄임
      color: '#000',
      fontFamily: 'MaruBuri-SemiBold',
      textAlign: 'center',
-     lineHeight: 24,
+     lineHeight: 22, // 24 -> 22로 줄임
    },
    bubbleTail: {
      position: 'absolute',

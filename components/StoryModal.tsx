@@ -150,8 +150,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backgroundBox: {
-    width: width * 0.45, // 0.9 -> 0.45로 절반으로 줄임
-    height: height * 0.375, // 0.75 -> 0.375로 절반으로 줄임
+    width: width * 0.8, // 0.45 -> 0.8로 더 크게
+    height: height * 0.7, // 0.375 -> 0.7로 더 크게
     borderRadius: 20,
     overflow: "hidden",
     backgroundColor: "#fff",
@@ -159,20 +159,20 @@ const styles = StyleSheet.create({
   },
   contentBox: {
     flex: 1,
-    padding: 12, // 20 -> 12로 줄임
+    padding: 24, // 12 -> 24로 증가
     justifyContent: "flex-end",
   },
   dayTitle: {
-    fontSize: 16, // 18 -> 16으로 줄임
+    fontSize: 24, // 16 -> 24로 증가
     fontWeight: "bold",
-    marginBottom: 8, // 12 -> 8로 줄임
+    marginBottom: 16, // 8 -> 16으로 증가
     textAlign: "center",
     fontFamily: "MaruBuri-Bold",
   },
   speechBubble: {
-    marginBottom: 8, // 10 -> 8로 줄임
-    padding: 8, // 12 -> 8로 줄임
-    borderRadius: 12, // 16 -> 12로 줄임
+    marginBottom: 16, // 8 -> 16으로 증가
+    padding: 16, // 8 -> 16으로 증가
+    borderRadius: 20, // 12 -> 20으로 증가
     maxWidth: "85%",
   },
   gamtoriBubble: {
@@ -184,17 +184,17 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   speaker: {
-    fontSize: 16, // 13 -> 16으로 증가
+    fontSize: 20, // 16 -> 20으로 증가
     fontWeight: "600",
-    marginBottom: 6, // 4 -> 6으로 증가
+    marginBottom: 8, // 6 -> 8으로 증가
     color: "#333",
     fontFamily: "MaruBuri-SemiBold",
   },
   lineText: {
-    fontSize: 18, // 15 -> 18로 증가
+    fontSize: 20, // 18 -> 20으로 증가
     color: "#333",
     fontFamily: "MaruBuri-Regular",
-    lineHeight: 26, // 줄 간격 추가
+    lineHeight: 30, // 26 -> 30으로 증가
   },
   aside: {
     fontSize: 13,
