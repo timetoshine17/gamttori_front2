@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "감또리네",
+    "slug": "gamttori-app",
+    "owner": "juyeoun1207",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/happy_gamttori.png",
+    "scheme": "gamttorifront",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/happy_gamttori.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.juyeoun1207.gamttori_front"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/happy_gamttori.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/happy_gamttori.png",
+          "imageWidth": 300,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/MaruBuri-Light.ttf",
+            "./assets/fonts/MaruBuri-Regular.ttf",
+            "./assets/fonts/MaruBuri-SemiBold.ttf",
+            "./assets/fonts/MaruBuri-Bold.ttf",
+            "./assets/fonts/MaruBuri-ExtraLight.ttf"
+          ]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
